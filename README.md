@@ -7,7 +7,7 @@ A web application that can optimize the order of waypoints in Google Maps routes
 ## Installation and Setup
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:paulrennecke/route-optimizer.git
 cd Route
 ```
 
