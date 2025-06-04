@@ -2,7 +2,7 @@
 
 A web application that can optimize the order of waypoints in Google Maps routes.
 
-###  [Live Demo](https://rennecke.org/Zwischenstopp)
+###  [Live Demo](https://rennecke.org/route)
 
 ## Installation and Setup
 
