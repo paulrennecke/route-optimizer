@@ -16,14 +16,6 @@ jobs:
         with:
           fetch-depth: 0  # Fetch full history for git-ftp
 
-      - name: Create environment file
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-        run: |
-          echo "# Google Maps API Configuration" > .env
-          echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env
-          echo "Environment file created with Google Maps API key"
-
       - name: Set up SSH key and config
         env:
           SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY }}
@@ -55,3 +47,11 @@ jobs:
           git config git-ftp.key ~/.ssh/id_rsa
           git config git-ftp.insecure 1
           git ftp push --auto-init --remote-root "$REMOTE_ROOT" --verbose
+
+      - name: Create environment file
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: |
+            echo "# Google Maps API Configuration" > "$GITHUB_WORKSPACE/$REMOTE_ROOT/.env"
+            echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> "$GITHUB_WORKSPACE/$REMOTE_ROOT/.env"
+            echo "Environment file created with Google Maps API key in $REMOTE_ROOT"
