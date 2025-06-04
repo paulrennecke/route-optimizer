@@ -1,0 +1,365 @@
+/* Grundlegende Stile */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1.2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2.5rem;
+}
+
+/* Abschnittsgestaltung */
+section {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+h2 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+/* Eingabebereich */
+.address-container {
+    margin-bottom: 2rem;
+}
+
+.address-input {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.address-input label {
+    display: block;
+    margin-bottom: 0.7rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.address-input input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.05rem;
+    transition: border-color 0.2s;
+}
+
+.address-input input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.options-container {
+    margin-bottom: 2rem;
+    padding-top: 0.5rem;
+}
+
+.option {
+    margin-bottom: 1.5rem;
+}
+
+.option label {
+    display: block;
+    margin-bottom: 0.7rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.option select {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.05rem;
+    background-color: white;
+}
+
+/* Buttons */
+.btn {
+    padding: 1rem 2rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    min-width: 180px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn.primary {
+    background-color: #2ecc71;
+    font-size: 1.2rem;
+    padding: 1.2rem 2.5rem;
+    min-width: 220px;
+    display: block;
+    margin: 1.5rem auto 0.5rem auto;
+}
+
+.btn.primary:hover {
+    background-color: #27ae60;
+}
+
+#add-waypoint {
+    margin-bottom: 1.5rem;
+}
+
+/* Karte */
+#map-container {
+    height: 500px;
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Responsives Design */
+@media (min-width: 768px) {
+    #results {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+    
+    .btn {
+        display: inline-block;
+    }
+}
+
+@media (max-width: 767px) {
+    .btn {
+        display: block;
+        width: 100%;
+        margin: 0.75rem 0;
+    }
+}
+
+/* Utility-Klassen */
+.hidden {
+    display: none;
+}
+
+/* Zwischenstopp-Container */
+.waypoint-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+}
+
+.waypoint-item .address-input {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.remove-waypoint {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 0 0.5rem;
+    margin-left: 1rem;
+    transition: transform 0.2s;
+}
+
+.remove-waypoint:hover {
+    transform: scale(1.2);
+    color: #c0392b;
+}
+
+/* Optimierte Route Liste */
+.route-summary {
+    background-color: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.route-list ol {
+    list-style-position: inside;
+    padding-left: 0;
+    counter-reset: route-counter;
+}
+
+.route-list li {
+    padding: 0.8rem 0.5rem;
+    border-bottom: 1px solid #eee;
+    list-style: none;
+    position: relative;
+    padding-left: 2.5rem;
+}
+
+.route-list li:before {
+    counter-increment: route-counter;
+    content: counter(route-counter);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #3498db;
+    color: white;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.route-list li:last-child {
+    border-bottom: none;
+}
+
+/* Ladeanzeige */
+.loading {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.loading:after {
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid #3498db;
+    border-color: #3498db transparent #3498db transparent;
+    animation: loading 1.2s infinite;
+}
+
+.loading-text {
+    margin-left: 8px;
+}
+
+@keyframes loading {
+    0% {
+        transform: rotate(0);
+        animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50% {
+        transform: rotate(180deg);
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fortbewegungsmittel-Auswahl */
+.travel-mode-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.travel-mode-option {
+    flex: 1;
+    min-width: 80px;
+}
+
+.travel-mode-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.travel-mode-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0.5rem;
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.travel-mode-option input[type="radio"]:checked + .travel-mode-label {
+    background-color: #e3f2fd;
+    border-color: #3498db;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
+}
+
+.travel-mode-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.travel-mode-text {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+    .travel-mode-container {
+        flex-direction: column;
+    }
+}

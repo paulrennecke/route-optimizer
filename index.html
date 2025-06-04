@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Waypoint Optimizer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Konfiguration muss zuerst geladen werden -->
+    <script src="js/config.js"></script>
+</head>
+<body>    <header>
+        <h1>Waypoint Optimizer</h1>
+    </header>
+    
+    <main>
+        <section id="inputs">            <div class="address-container">
+                <h2>Addresses</h2>
+                
+                <div class="address-input start">
+                    <label for="start">Starting Point:</label>
+                    <input type="text" id="start" class="address-autocomplete" placeholder="Enter start address">
+                </div>
+                  <div id="waypoints-container">
+                    <!-- Waypoints will be dynamically added here -->
+                </div>
+                
+                <button id="add-waypoint" class="btn">Add Waypoint</button>
+                
+                <div class="address-input end">
+                    <label for="end">Destination:</label>
+                    <input type="text" id="end" class="address-autocomplete" placeholder="Enter destination address">
+                </div>
+            </div>
+              <div class="options-container">
+                <h2>Options</h2>
+                <div class="option">
+                    <label for="optimization-preference">Optimize for:</label>
+                    <select id="optimization-preference">
+                        <option value="distance">Shortest Distance</option>
+                        <option value="time" selected>Shortest Time</option>
+                    </select>
+                </div>
+                <div class="option">
+                    <label for="travel-mode">Transportation Mode:</label>
+                    <div class="travel-mode-container">
+                        <div class="travel-mode-option">
+                            <input type="radio" id="driving" name="travel-mode" value="DRIVING" checked>                            <label for="driving" class="travel-mode-label">
+                                <span class="travel-mode-icon">🚗</span>
+                                <span class="travel-mode-text">Car</span>
+                            </label>
+                        </div>
+                        <div class="travel-mode-option">
+                            <input type="radio" id="bicycling" name="travel-mode" value="BICYCLING">
+                            <label for="bicycling" class="travel-mode-label">
+                                <span class="travel-mode-icon">🚲</span>
+                                <span class="travel-mode-text">Bicycle</span>
+                            </label>
+                        </div>
+                        <div class="travel-mode-option">
+                            <input type="radio" id="walking" name="travel-mode" value="WALKING">
+                            <label for="walking" class="travel-mode-label">
+                                <span class="travel-mode-icon">🚶</span>
+                                <span class="travel-mode-text">Walking</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="calculate-route" class="btn primary">Optimize Route</button>
+        </section>
+          <section id="results" class="hidden">
+            <div class="optimized-route">
+                <h2>Optimized Route</h2>
+                <div class="route-summary">
+                    <p id="total-distance">Total Distance: <span></span></p>
+                    <p id="total-duration">Total Time: <span></span></p>
+                </div>
+                <div class="route-list">
+                    <ol id="optimized-stops">
+                        <!-- List of optimized stops -->
+                    </ol>
+                </div>
+                <button id="export-route" class="btn">Export Route</button>
+                <button id="save-route" class="btn">Save Route</button>
+            </div>
+            <div id="map-container">
+                <div id="map"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- GitHub Link - Bottom Right -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <a href="https://github.com/paulrennecke/route-optimizer" target="_blank" class="text-decoration-none" style="color: #24292e;">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- JavaScript-Dateien -->
+    <script src="js/ui-controller.js"></script>
+    <script src="js/map-handler.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/route-optimizer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

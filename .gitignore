@@ -1,0 +1,16 @@
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+
+# IDE/Editor files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
