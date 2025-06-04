@@ -51,6 +51,9 @@ jobs:
       - name: Copy example env and set Google Maps API key
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          HOST: ${{ secrets.SFTP_HOST }}
+          REMOTE_ROOT: ${{ secrets.SFTP_REMOTE_ROOT }}
+          USERNAME: ${{ secrets.SFTP_USERNAME }}
         run: |
             ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USERNAME@$HOST "cp '$REMOTE_ROOT/.env.example' '$REMOTE_ROOT/.env' && sed -i 's/^GOOGLE_MAPS_API_KEY=.*/GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY/' '$REMOTE_ROOT/.env'"
             echo ".env file created from .env.example with updated Google Maps API key in $REMOTE_ROOT"
