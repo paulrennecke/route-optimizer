@@ -36,21 +36,18 @@ const loadGoogleMapsApi = (apiKey) => {
             resolve();
             return;
         }
-        
+
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
         script.async = true;
         script.defer = true;
-        
         script.onload = () => {
             googleMapsLoaded = true;
             resolve();
         };
-        
         script.onerror = () => {
             reject(new Error('Fehler beim Laden der Google Maps API'));
         };
-        
         document.head.appendChild(script);
     });
 };
