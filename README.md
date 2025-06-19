@@ -46,6 +46,6 @@ GOOGLE_CLIENT_ID=your_google_client_id
 5. The optimized route will be displayed on the map, along with a list of stops
 6. To import addresses from Google Contacts, click "Load Google Contacts"
 
-## License
+## Note
 
-This project is licensed under the MIT License.
+This project was created as part of "Vibe coding". Please keep this in mind.

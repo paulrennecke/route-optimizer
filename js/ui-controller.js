@@ -1,98 +1,67 @@
 // ui-controller.js - User interface and interaction management
 
 const UIController = (() => {
-    // Private Variablen
     let waypointCounter = 0;
-    
-    // DOM-Elemente
     const waypointsContainer = document.getElementById('waypoints-container');
     const addWaypointButton = document.getElementById('add-waypoint');
     const resultsSection = document.getElementById('results');
+    const contactAddressNameMap = new Map();
     
-    // Private Methoden
-    const createWaypointElement = (id) => {
-        const div = document.createElement('div');
-        div.className = 'waypoint-item';
-        
-        const addressInput = document.createElement('div');
-        addressInput.className = 'address-input';
-          const label = document.createElement('label');
-        label.setAttribute('for', `waypoint-${id}`);
-        label.textContent = `Waypoint ${id}:`;
-        
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = `waypoint-${id}`;
-        input.className = 'waypoint address-autocomplete';
-        input.placeholder = 'Enter address';
-        
-        addressInput.appendChild(label);
-        addressInput.appendChild(input);
-        
-        const removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.className = 'remove-waypoint';
-        removeButton.setAttribute('data-id', id);
-        removeButton.textContent = '×';
-        removeButton.addEventListener('click', () => {
-            removeWaypoint(id);
+    // Utility: Create DOM element with classes and attributes
+    const createElement = (tag, options = {}) => {
+        const el = document.createElement(tag);
+        if (options.className) el.className = options.className;
+        if (options.attrs) Object.entries(options.attrs).forEach(([k, v]) => el.setAttribute(k, v));
+        if (options.text) el.textContent = options.text;
+        return el;
+    };
+
+    // Waypoint element
+    const createWaypointElement = id => {
+        const div = createElement('div', { className: 'waypoint-item' });
+        const addressInput = createElement('div', { className: 'address-input' });
+        const label = createElement('label', { attrs: { for: `waypoint-${id}` }, text: `Waypoint ${id}:` });
+        const input = createElement('input', {
+            className: 'waypoint address-autocomplete',
+            attrs: { type: 'text', id: `waypoint-${id}`, placeholder: 'Enter address' }
         });
-        
-        div.appendChild(addressInput);
-        div.appendChild(removeButton);
-        
+        addressInput.append(label, input);
+        const removeButton = createElement('button', {
+            className: 'remove-waypoint',
+            attrs: { type: 'button', 'data-id': id },
+            text: '\u00d7'
+        });
+        removeButton.addEventListener('click', () => removeWaypoint(id));
+        div.append(addressInput, removeButton);
         return div;
     };
-    
-    const removeWaypoint = (id) => {
-        const element = document.getElementById(`waypoint-${id}`).closest('.waypoint-item');
-        element.remove();
-    };
-    
-    const setupAutocomplete = (input) => {
-        const autocomplete = new google.maps.places.Autocomplete(input);
-        autocomplete.setFields(['formatted_address', 'geometry', 'place_id']);
-        return autocomplete;
+
+    const removeWaypoint = id => {
+        const el = document.getElementById(`waypoint-${id}`)?.closest('.waypoint-item');
+        if (el) el.remove();
     };
 
-    const setupCombinedAutocomplete = (input) => {
-        let dropdown;
-        let placesService;
-        let sessionToken;
-
-        function removeDropdown() {
-            if (dropdown) {
-                dropdown.remove();
-                dropdown = null;
-            }
-        }
-
-        function showDropdown(suggestions) {
+    // Autocomplete for address fields (Google + contacts)
+    const setupCombinedAutocomplete = input => {
+        let dropdown, placesService, sessionToken;
+        const removeDropdown = () => { dropdown?.remove(); dropdown = null; };
+        const showDropdown = suggestions => {
             removeDropdown();
             if (!suggestions.length) return;
-            dropdown = document.createElement('div');
-            dropdown.className = 'custom-autocomplete-dropdown';
-            dropdown.style.position = 'absolute';
-            dropdown.style.background = '#fff';
-            dropdown.style.border = '1px solid #ccc';
-            dropdown.style.zIndex = '10000';
-            dropdown.style.width = input.offsetWidth + 'px';
-            dropdown.style.maxHeight = '220px';
-            dropdown.style.overflowY = 'auto';
-            dropdown.style.left = input.getBoundingClientRect().left + window.scrollX + 'px';
-            dropdown.style.top = input.getBoundingClientRect().bottom + window.scrollY + 'px';
-
+            dropdown = createElement('div', { className: 'custom-autocomplete-dropdown' });
+            Object.assign(dropdown.style, {
+                position: 'absolute', background: '#fff', border: '1px solid #ccc', zIndex: 10000,
+                width: input.offsetWidth + 'px', maxHeight: '220px', overflowY: 'auto',
+                left: input.getBoundingClientRect().left + window.scrollX + 'px',
+                top: input.getBoundingClientRect().bottom + window.scrollY + 'px'
+            });
             suggestions.forEach(s => {
-                const item = document.createElement('div');
-                item.className = 'autocomplete-item';
-                item.style.padding = '0.5em 1em';
-                item.style.cursor = 'pointer';
-                if (s.type === 'contact') {
-                    item.innerHTML = `<span style="color:#2980b9;font-weight:bold;">${s.label}</span> <span style="background:#eaf6ff;color:#2980b9;font-size:0.85em;padding:2px 6px;border-radius:6px;margin-left:8px;">Kontakt</span>`;
-                } else {
-                    item.textContent = s.label;
-                }
-                item.addEventListener('mousedown', (e) => {
+                const item = createElement('div', { className: 'autocomplete-item' });
+                Object.assign(item.style, { padding: '0.5em 1em', cursor: 'pointer' });
+                item.innerHTML = s.type === 'contact'
+                    ? `<span style="color:#2980b9;font-weight:bold;">${s.label}</span> <span style="background:#eaf6ff;color:#2980b9;font-size:0.85em;padding:2px 6px;border-radius:6px;margin-left:8px;">Contact</span>`
+                    : s.label;
+                item.addEventListener('mousedown', e => {
                     e.preventDefault();
                     if (s.type === 'contact') {
                         input.value = `${s.label}`; // Name und Adresse eintragen
@@ -107,57 +76,27 @@ const UIController = (() => {
                 dropdown.appendChild(item);
             });
             document.body.appendChild(dropdown);
-        }
-
-        async function updateSuggestions() {
+        };
+        const updateSuggestions = async () => {
             const val = input.value.trim();
-            if (!val) {
-                removeDropdown();
-                return;
-            }
-            // Kontakte filtern
+            if (!val) return removeDropdown();
             let contactSuggestions = [];
-            if (UIController._contacts && UIController._contacts.length > 0) {
-                contactSuggestions = UIController._contacts
-                    .filter(c => c.name.toLowerCase().includes(val.toLowerCase()))
-                    .map(c => ({
-                        type: 'contact',
-                        label: `${c.name} — ${c.address}`,
-                        value: c.address
-                    }));
-            }
-            // Google Places Vorschläge holen
-            if (!placesService) {
-                // Dummy-Map für PlacesService (wird nicht angezeigt)
-                const dummyMap = document.createElement('div');
-                placesService = new google.maps.places.AutocompleteService();
-            }
-            if (!sessionToken) {
-                sessionToken = new google.maps.places.AutocompleteSessionToken();
-            }
-            placesService.getPlacePredictions({
-                input: val,
-                sessionToken: sessionToken
-            }, (predictions, status) => {
+            if (UIController._contacts?.length)
+                contactSuggestions = UIController._contacts.filter(c => c.name.toLowerCase().includes(val.toLowerCase()))
+                    .map(c => ({ type: 'contact', label: `${c.name} — ${c.address}`, value: c.address }));
+            if (!placesService) placesService = new google.maps.places.AutocompleteService();
+            if (!sessionToken) sessionToken = new google.maps.places.AutocompleteSessionToken();
+            placesService.getPlacePredictions({ input: val, sessionToken }, (predictions, status) => {
                 let placeSuggestions = [];
-                if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-                    placeSuggestions = predictions.map(p => ({
-                        type: 'place',
-                        label: p.description,
-                        value: p.description
-                    }));
-                }
-                // Kombinieren: Kontakte zuerst, dann Google
+                if (status === google.maps.places.PlacesServiceStatus.OK && predictions)
+                    placeSuggestions = predictions.map(p => ({ type: 'place', label: p.description, value: p.description }));
                 showDropdown([...contactSuggestions, ...placeSuggestions]);
             });
-        }
-
-        // Event-Listener
+        };
         input.addEventListener('input', updateSuggestions);
         input.addEventListener('focus', updateSuggestions);
         input.addEventListener('blur', () => setTimeout(removeDropdown, 200));
-        // Wenn Wert exakt Kontaktname, Adresse einfügen
-        input.addEventListener('change', function() {
+        input.addEventListener('change', () => {
             const val = input.value.trim();
             // Prüfe, ob das Feld im Kontakt-Format ist (Name — Adresse)
             const contactMatch = /^(.+)\s+—\s+(.+)$/.exec(val);
@@ -173,7 +112,7 @@ const UIController = (() => {
     
     // Öffentliche Methoden
     return {
-        init: function() {
+        init: () => {
             // Event Listener for "Add Waypoint" button
             addWaypointButton.addEventListener('click', () => {
                 waypointCounter++;
@@ -196,7 +135,7 @@ const UIController = (() => {
             UIController.setResultsButtonsState(false);
             UIController.setLoadRouteButtonState(localStorage.getItem('savedRoutes') && JSON.parse(localStorage.getItem('savedRoutes')).length > 0);
             // Add Google Contacts login handler
-            this.initGoogleContactsLogin();
+            UIController.initGoogleContactsLogin();
         },
           collectAddresses: function() {
             const startInput = document.getElementById('start');
@@ -217,19 +156,12 @@ const UIController = (() => {
                 end: endAddress
             };
         },
-          setLoadingState: function(isLoading) {
-            const calculateButton = document.getElementById('calculate-route');
-            
-            if (isLoading) {
-                calculateButton.disabled = true;
-                calculateButton.innerHTML = '<span class="loading-text">Calculating...</span>';
-            } else {
-                calculateButton.disabled = false;
-                calculateButton.textContent = 'Optimize Route';
-            }
+        setLoadingState: isLoading => {
+            const btn = document.getElementById('calculate-route');
+            btn.disabled = isLoading;
+            btn.innerHTML = isLoading ? '<span class="loading-text">Calculating...</span>' : 'Optimize Route';
         },
-          displayResults: function(optimizedRoute) {
-            // Show results section
+        displayResults: optimizedRoute => {
             resultsSection.classList.remove('hidden');
             // Buttons aktivieren
             UIController.setResultsButtonsState(true);
@@ -425,7 +357,6 @@ const UIController = (() => {
             const btn = document.getElementById('import-google-contacts');
             if (!btn) return;
             btn.addEventListener('click', async () => {
-                // Load GIS library if not already loaded
                 if (!window.google || !window.accounts) {
                     const script = document.createElement('script');
                     script.src = 'https://accounts.google.com/gsi/client';
@@ -436,20 +367,15 @@ const UIController = (() => {
                 }
             });
         },
-        // Internal: Initialize GIS Auth and prompt login
-        _initGoogleGISAuth: function() {
+        _initGoogleGISAuth: () => {
             Config.load().then(() => {
                 const clientId = Config.get('GOOGLE_CLIENT_ID');
-                if (!clientId) {
-                    alert('Google Client ID not configured.');
-                    return;
-                }
+                if (!clientId) return alert('Google Client ID not configured.');
                 const tokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: clientId,
                     scope: 'https://www.googleapis.com/auth/contacts.readonly',
-                    callback: (response) => {
-                        if (response && response.access_token) {
-                            // Statt alert: Button ersetzen durch Login-Bestätigung
+                    callback: response => {
+                        if (response?.access_token) {
                             const btn = document.getElementById('import-google-contacts');
                             if (btn) {
                                 btn.disabled = true;
@@ -459,23 +385,16 @@ const UIController = (() => {
                                 btn.style.border = '1px solid #2980b9';
                                 btn.style.cursor = 'default';
                             }
-                            // Fetch all contacts and store for UI
                             UIController._contacts = [];
                             fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,addresses&pageSize=1000', {
-                                headers: {
-                                    'Authorization': 'Bearer ' + response.access_token
-                                }
+                                headers: { 'Authorization': 'Bearer ' + response.access_token }
                             })
                             .then(res => res.json())
                             .then(data => {
                                 UIController._processContactsData(data);
-                                if (data.nextPageToken) {
-                                    UIController._fetchAllContacts(response.access_token, data.nextPageToken);
-                                } 
+                                if (data.nextPageToken) UIController._fetchAllContacts(response.access_token, data.nextPageToken);
                             })
-                            .catch(err => {
-                                console.error('Error fetching contacts:', err);
-                            });
+                            .catch(err => console.error('Error fetching contacts:', err));
                         } else {
                             alert('Google login failed.');
                         }
@@ -484,33 +403,25 @@ const UIController = (() => {
                 tokenClient.requestAccessToken();
             });
         },
-        _fetchAllContacts: function(accessToken, pageToken) {
+        _fetchAllContacts: (accessToken, pageToken) => {
             fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,addresses&pageSize=1000&pageToken=' + pageToken, {
-                headers: {
-                    'Authorization': 'Bearer ' + accessToken
-                }
+                headers: { 'Authorization': 'Bearer ' + accessToken }
             })
             .then(res => res.json())
             .then(data => {
                 UIController._processContactsData(data);
-                if (data.nextPageToken) {
-                    UIController._fetchAllContacts(accessToken, data.nextPageToken);
-                } 
+                if (data.nextPageToken) UIController._fetchAllContacts(accessToken, data.nextPageToken);
             })
-            .catch(err => {
-                console.error('Error fetching paginated contacts:', err);
-            });
+            .catch(err => console.error('Error fetching paginated contacts:', err));
         },
-        _processContactsData: function(data) {
+        _processContactsData: data => {
             if (data.connections) {
                 data.connections.forEach(person => {
-                    const name = person.names && person.names.length > 0 ? person.names[0].displayName : null;
+                    const name = person.names?.[0]?.displayName;
                     if (name && person.addresses) {
                         person.addresses.forEach(addr => {
                             const address = addr.formattedValue || addr.streetAddress || null;
-                            if (address) {
-                                UIController._contacts.push({ name, address });
-                            }
+                            if (address) UIController._contacts.push({ name, address });
                         });
                     }
                 });
@@ -526,7 +437,7 @@ const UIController = (() => {
     };
 })();
 
-// Silent Auth: Prüfe beim Laden, ob Nutzer noch eingeloggt ist
+// Silent Auth: Check on load if user is still logged in
 document.addEventListener('DOMContentLoaded', function() {
     if (window.google && window.google.accounts && window.google.accounts.oauth2) {
         Config.load().then(() => {
@@ -538,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 prompt: 'none', // Silent
                 callback: (response) => {
                     if (response && response.access_token) {
-                        // Zeige eingeloggten Status
+                        // Show logged-in status
                         const btn = document.getElementById('import-google-contacts');
                         if (btn) {
                             btn.disabled = true;
@@ -548,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             btn.style.border = '1px solid #2980b9';
                             btn.style.cursor = 'default';
                         }
-                        // Kontakte laden
+                        // Load contacts
                         UIController._contacts = [];
                         fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,addresses&pageSize=1000', {
                             headers: {
