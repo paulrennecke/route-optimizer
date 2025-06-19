@@ -95,9 +95,11 @@ const UIController = (() => {
                 item.addEventListener('mousedown', (e) => {
                     e.preventDefault();
                     if (s.type === 'contact') {
-                        input.value = s.value;
+                        input.value = `${s.label}`; // Name und Adresse eintragen
+                        input.setAttribute('data-contact', '1');
                     } else if (s.type === 'place') {
                         input.value = s.value;
+                        input.removeAttribute('data-contact');
                     }
                     removeDropdown();
                     input.dispatchEvent(new Event('change'));
@@ -157,9 +159,14 @@ const UIController = (() => {
         // Wenn Wert exakt Kontaktname, Adresse einfügen
         input.addEventListener('change', function() {
             const val = input.value.trim();
-            const match = UIController._contacts && UIController._contacts.find(c => c.name === val);
-            if (match) {
-                input.value = match.address;
+            // Prüfe, ob das Feld im Kontakt-Format ist (Name — Adresse)
+            const contactMatch = /^(.+)\s+—\s+(.+)$/.exec(val);
+            if (contactMatch) {
+                input.value = val; // Name und Adresse stehen schon drin
+                input.setAttribute('data-contact', '1');
+            } else {
+                // Fallback: Nur Adresse anzeigen, data-Attribut entfernen
+                input.removeAttribute('data-contact');
             }
         });
     };
@@ -187,14 +194,16 @@ const UIController = (() => {
             // Event listeners for export and save buttons
             document.getElementById('export-route').addEventListener('click', this.exportRoute);
             document.getElementById('save-route').addEventListener('click', this.saveRoute);
+            document.getElementById('load-route').addEventListener('click', this.loadRoute);
             
             // Add Google Contacts login handler
             this.initGoogleContactsLogin();
         },
           collectAddresses: function() {
-            const startAddress = document.getElementById('start').value.trim();
-            const endAddress = document.getElementById('end').value.trim();
-            
+            const startInput = document.getElementById('start');
+            const endInput = document.getElementById('end');
+            const startAddress = startInput.value.trim();
+            const endAddress = endInput.value.trim();
             // Collect all waypoints
             const waypointAddresses = [];
             document.querySelectorAll('.waypoint').forEach(waypoint => {
@@ -203,7 +212,6 @@ const UIController = (() => {
                     waypointAddresses.push(address);
                 }
             });
-            
             return {
                 start: startAddress,
                 waypoints: waypointAddresses,
@@ -224,30 +232,33 @@ const UIController = (() => {
           displayResults: function(optimizedRoute) {
             // Show results section
             resultsSection.classList.remove('hidden');
-            
+            // Buttons aktivieren
+            UIController.setResultsButtonsState(true);
+
             // Display total distance and duration
             document.querySelector('#total-distance span').textContent = optimizedRoute.totalDistance;
             document.querySelector('#total-duration span').textContent = optimizedRoute.totalDuration;
-            
+
             // Display optimized list of stops
             const stopsListElement = document.getElementById('optimized-stops');
             stopsListElement.innerHTML = '';
-            
+
             optimizedRoute.stops.forEach((stop, index) => {
                 const li = document.createElement('li');
-                
-                // Format text based on position in route
                 let stopText = stop.address;
+                // Kontaktname anzeigen, falls vorhanden
+                if (contactAddressNameMap.has(stop.address)) {
+                    stopText = `${contactAddressNameMap.get(stop.address)} — ${stop.address}`;
+                }
                 if (index === 0) {
                     stopText = `Start: ${stopText}`;
                 } else if (index === optimizedRoute.stops.length - 1) {
                     stopText = `Destination: ${stopText}`;
                 }
-                
                 li.textContent = stopText;
                 stopsListElement.appendChild(li);
             });
-            
+
             // Scroll to results section
             resultsSection.scrollIntoView({ behavior: 'smooth' });
         },
@@ -257,62 +268,84 @@ const UIController = (() => {
         
         exportRoute: function() {
             // Create Google Maps URL with optimized route
+            function extractAddress(val) {
+                const contactMatch = /^(.+)\s+—\s+(.+)$/.exec(val);
+                if (contactMatch) {
+                    return contactMatch[2].trim();
+                }
+                return val.trim();
+            }
             try {
                 const stops = window.currentOptimizedRoute.stops;
                 if (!stops || stops.length < 2) {
                     throw new Error('No valid route available for export');
                 }
-                
                 let url = 'https://www.google.com/maps/dir/?api=1';
-                
                 // Starting point
-                url += `&origin=${encodeURIComponent(stops[0].address)}`;
-                
+                url += `&origin=${encodeURIComponent(extractAddress(stops[0].address))}`;
                 // Destination
-                url += `&destination=${encodeURIComponent(stops[stops.length - 1].address)}`;
-                
+                url += `&destination=${encodeURIComponent(extractAddress(stops[stops.length - 1].address))}`;
                 // Waypoints
                 if (stops.length > 2) {
-                    const waypoints = stops.slice(1, -1).map(stop => stop.address);
+                    const waypoints = stops.slice(1, -1).map(stop => extractAddress(stop.address));
                     url += `&waypoints=${encodeURIComponent(waypoints.join('|'))}`;
                 }
-                
                 // Open in new tab
                 window.open(url, '_blank');
-                
             } catch (error) {
                 UIController.showError('Route could not be exported: ' + error.message);
             }
         },
           saveRoute: function() {
-            // Implementation for saving to localStorage
             try {
                 if (!window.currentOptimizedRoute) {
                     throw new Error('No route available to save');
                 }
-                
                 const routeName = prompt('Enter a name for this route:', 'My Route');
-                
                 if (!routeName) return; // User cancelled
-                
-                // Get saved routes or initialize empty array
                 const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
-                
-                // Add new route
                 savedRoutes.push({
                     name: routeName,
                     date: new Date().toISOString(),
                     route: window.currentOptimizedRoute
                 });
-                
-                // Save back to localStorage
                 localStorage.setItem('savedRoutes', JSON.stringify(savedRoutes));
-                
                 alert(`Route "${routeName}" has been saved successfully!`);
-                
+                // Nach dem Speichern: Load-Button aktivieren
+                UIController.setLoadRouteButtonState(true);
             } catch (error) {
                 UIController.showError('Route could not be saved: ' + error.message);
             }
+        },
+        loadRoute: function() {
+            const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
+            if (!savedRoutes.length) {
+                alert('No saved routes found.');
+                UIController.setLoadRouteButtonState(false);
+                return;
+            }
+            // Einfache Auswahl: Prompt mit Namen der gespeicherten Routen
+            const names = savedRoutes.map((r, i) => `${i + 1}: ${r.name} (${new Date(r.date).toLocaleString()})`).join('\n');
+            const idx = prompt(`Select route to load (number):\n${names}`);
+            const routeIdx = parseInt(idx, 10) - 1;
+            if (isNaN(routeIdx) || routeIdx < 0 || routeIdx >= savedRoutes.length) return;
+            const route = savedRoutes[routeIdx].route;
+            // Felder befüllen
+            document.getElementById('start').value = route.stops[0].address;
+            document.getElementById('end').value = route.stops[route.stops.length - 1].address;
+            // Wegpunkte
+            const waypointsContainer = document.getElementById('waypoints-container');
+            waypointsContainer.innerHTML = '';
+            for (let i = 1; i < route.stops.length - 1; i++) {
+                waypointCounter++;
+                const waypointElement = createWaypointElement(waypointCounter);
+                waypointsContainer.appendChild(waypointElement);
+                const input = waypointElement.querySelector('.address-autocomplete');
+                input.value = route.stops[i].address;
+                setupCombinedAutocomplete(input);
+            }
+            // Nach dem Laden: Buttons aktivieren
+            UIController.setResultsButtonsState(true);
         },
         // Add Google Contacts login handler using Google Identity Services (GIS)
         initGoogleContactsLogin: function() {
@@ -409,6 +442,13 @@ const UIController = (() => {
                     }
                 });
             }
+        },
+        setResultsButtonsState: function(enabled) {
+            document.getElementById('export-route').disabled = !enabled;
+            document.getElementById('save-route').disabled = !enabled;
+        },
+        setLoadRouteButtonState: function(enabled) {
+            document.getElementById('load-route').disabled = !enabled;
         }
     };
 })();
@@ -459,3 +499,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Hilfsfunktion: Adressen aus Kontakten automatisch formatieren
+async function normalizeAllContactAddresses() {
+    if (!UIController._contacts || UIController._contacts.length === 0) return;
+    for (let c of UIController._contacts) {
+        if (c.address) {
+            try {
+                c.address = await APIService.geocodeAddress(c.address);
+            } catch (e) {
+                // Fehler ignorieren, Originaladresse bleibt
+            }
+        }
+    }
+}
+
+// Mappe von Adresse zu Kontaktname für Anzeige
+const contactAddressNameMap = new Map();
+// Hook: Nach dem Laden der Kontakte Map aktualisieren
+const origProcessContactsData = UIController._processContactsData;
+UIController._processContactsData = function(data) {
+    origProcessContactsData.call(UIController, data);
+    if (UIController._contacts) {
+        for (const c of UIController._contacts) {
+            if (c.address && c.name) {
+                contactAddressNameMap.set(c.address, c.name);
+            }
+        }
+    }
+    normalizeAllContactAddresses();
+};

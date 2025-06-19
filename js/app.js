@@ -55,7 +55,11 @@ const loadGoogleMapsApi = (apiKey) => {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialisiere die Anwendung
     initializeApp();
-    
+
+    // Buttons initial deaktivieren
+    UIController.setResultsButtonsState(false);
+    UIController.setLoadRouteButtonState(localStorage.getItem('savedRoutes') && JSON.parse(localStorage.getItem('savedRoutes')).length > 0);
+
     // Event-Listener für den "Route optimieren"-Button
     document.getElementById('calculate-route').addEventListener('click', async () => {
         try {
