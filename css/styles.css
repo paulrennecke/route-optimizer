@@ -863,3 +863,31 @@ h2 {
     margin: 0;
   }
 }
+
+.address-input.end {
+    margin-top: 1rem;
+}
+
+.icon-dropdown {
+    font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', Arial, sans-serif;
+    font-size: 0.98rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    min-width: 180px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.icon-dropdown option {
+    font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', Arial, sans-serif;
+    font-size: 0.98rem;
+    padding-left: 0.5rem;
+}
+
+.icon-dropdown:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}

@@ -41,8 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Start and destination must be specified.');
             }
             const locations = await MapHandler.geocodeAddresses(addresses);
-            const optimizationPreference = document.querySelector('input[name="optimization-preference"]:checked').value;
-            const travelMode = document.querySelector('input[name="travel-mode"]:checked').value;
+            // Hole die Werte jetzt aus den Dropdowns statt aus Radio-Buttons
+            const optSelect = document.getElementById('optimization-preference');
+            if (!optSelect) throw new Error('No optimization preference selected or found!');
+            const optimizationPreference = optSelect.value;
+            const travelSelect = document.getElementById('travel-mode');
+            if (!travelSelect) throw new Error('No travel mode selected or found!');
+            const travelMode = travelSelect.value;
             let optimizedRoute;
             if (locations.waypoints.length <= 10) {
                 try {

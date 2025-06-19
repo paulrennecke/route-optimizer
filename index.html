@@ -39,48 +39,18 @@
             <div class="options-container">
                 <div class="option">
                     <label for="optimization-preference">Optimize for:</label>
-                    <div class="optimization-preference-container">
-                        <div class="optimization-preference-option">
-                            <input type="radio" id="opt-time" name="optimization-preference" value="time" checked>
-                            <label for="opt-time" class="optimization-preference-label">
-                                <span class="optimization-preference-icon">⏱️</span>
-                                <span class="optimization-preference-text">Shortest Time</span>
-                            </label>
-                        </div>
-                        <div class="optimization-preference-option">
-                            <input type="radio" id="opt-distance" name="optimization-preference" value="distance">
-                            <label for="opt-distance" class="optimization-preference-label">
-                                <span class="optimization-preference-icon">📏</span>
-                                <span class="optimization-preference-text">Shortest Distance</span>
-                            </label>
-                        </div>
-                    </div>
+                    <select id="optimization-preference" name="optimization-preference" class="icon-dropdown">
+                        <option value="time" selected>&#x23F1; Shortest Time</option>
+                        <option value="distance">&#x1F4CF; Shortest Distance</option>
+                    </select>
                 </div>
                 <div class="option">
                     <label for="travel-mode">Transportation Mode:</label>
-                    <div class="travel-mode-container">
-                        <div class="travel-mode-option">
-                            <input type="radio" id="driving" name="travel-mode" value="DRIVING" checked>
-                            <label for="driving" class="travel-mode-label">
-                                <span class="travel-mode-icon">🚗</span>
-                                <span class="travel-mode-text">Car</span>
-                            </label>
-                        </div>
-                        <div class="travel-mode-option">
-                            <input type="radio" id="bicycling" name="travel-mode" value="BICYCLING">
-                            <label for="bicycling" class="travel-mode-label">
-                                <span class="travel-mode-icon">🚲</span>
-                                <span class="travel-mode-text">Bicycle</span>
-                            </label>
-                        </div>
-                        <div class="travel-mode-option">
-                            <input type="radio" id="walking" name="travel-mode" value="WALKING">
-                            <label for="walking" class="travel-mode-label">
-                                <span class="travel-mode-icon">🚶</span>
-                                <span class="travel-mode-text">Walking</span>
-                            </label>
-                        </div>
-                    </div>
+                    <select id="travel-mode" name="travel-mode" class="icon-dropdown">
+                        <option value="DRIVING" selected>&#x1F697; Car</option>
+                        <option value="BICYCLING">&#x1F6B2; Bicycle</option>
+                        <option value="WALKING">&#x1F6B6; Walking</option>
+                    </select>
                 </div>
             </div>
             <button id="calculate-route" class="btn primary">
