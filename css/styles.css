@@ -149,6 +149,14 @@ h2 {
     background-color: #27ae60;
 }
 
+.btn:disabled, .btn[disabled] {
+    background-color: #bfc9d1 !important;
+    color: #eaeaea !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    opacity: 0.7;
+}
+
 #add-waypoint {
     margin-bottom: 1.5rem;
 }
@@ -483,4 +491,22 @@ h2 {
 
 .text-decoration-none {
     text-decoration: none;
+}
+
+/* Neue CSS-Klasse für die Button-Zeile */
+.route-buttons-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.route-buttons-row > .btn {
+    min-width: 160px;
+}
+
+.route-buttons-row > div {
+    display: flex;
+    gap: 0.5rem;
 }

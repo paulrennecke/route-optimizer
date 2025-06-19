@@ -188,8 +188,18 @@ const MapHandler = (() => {
             
             // Funktion zum Geokodieren einer einzelnen Adresse
             const geocodeAddress = (address) => {
+                // Extrahiere Adresse aus "Name — Adresse" falls nötig
+                function extractAddress(val) {
+                    const contactMatch = /^(.+)\s+—\s+(.+)$/.exec(val);
+                    if (contactMatch) {
+                        return contactMatch[2].trim();
+                    }
+                    return val.trim();
+                }
+                
+                const cleanAddress = extractAddress(address);
                 return new Promise((resolve, reject) => {
-                    geocoder.geocode({ address }, (results, status) => {
+                    geocoder.geocode({ address: cleanAddress }, (results, status) => {
                         if (status === google.maps.GeocoderStatus.OK) {
                             resolve({
                                 address,
