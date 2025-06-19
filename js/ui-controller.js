@@ -228,7 +228,8 @@ const UIController = (() => {
             // Focus start location input on page load (after DOM is ready)
             setTimeout(() => {
                 const startInput = document.getElementById('start');
-                if (startInput) startInput.focus();
+                const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (startInput && !isMobile) startInput.focus();
             }, 0);
 
             // Initial ein leeres Waypoint-Feld
