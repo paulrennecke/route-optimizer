@@ -21,7 +21,6 @@ const UIController = (() => {
         allWaypoints.forEach((input, idx) => {
             const wrapper = document.createElement('div');
             wrapper.className = 'waypoint-inline';
-            // Nummer vor das Input-Feld
             const number = document.createElement('span');
             number.className = 'waypoint-number';
             number.textContent = (idx + 1) + '.';
@@ -36,7 +35,7 @@ const UIController = (() => {
         const number = createElement('span', { className: 'waypoint-number', text: id + '.' });
         const input = createElement('input', {
             className: 'waypoint address-autocomplete',
-            attrs: { type: 'text', id: `waypoint-${id}`, placeholder: 'Enter address' }
+            attrs: { type: 'text', id: `waypoint-${id}`, placeholder: 'Enter waypoint address' }
         });
         const removeButton = createElement('button', {
             className: 'remove-waypoint',
@@ -240,7 +239,7 @@ const UIController = (() => {
             addressFields.forEach(field => {
                 setupCombinedAutocomplete(field);
             });
-            // Event listeners für export und save
+            // Event listeners für export, save und load
             document.getElementById('export-route').addEventListener('click', this.exportRoute);
             document.getElementById('save-route').addEventListener('click', () => UIController.saveRoute());
             document.getElementById('load-route').addEventListener('click', () => UIController.loadRoute());

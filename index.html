@@ -84,32 +84,25 @@
                 </div>
             </div>
             <button id="calculate-route" class="btn primary">
-                <span style="vertical-align:middle; display:inline-block; width:2em; height:2em; margin-right:0.5em;">
-                    <!-- Route Calculation: S-shaped pins, 4 pins, snake-like connection -->
+                <span class="route-calc-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 40 40" fill="none">
-                        <!-- S-shaped connection (runs through pin spikes) -->
                         <path d="M8 34 Q20 34, 32 28 Q20 22, 8 12 Q20 6, 32 6" stroke="#3498db" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-                        <!-- Pin 1 (bottom left, fully visible) -->
                         <g>
                             <path d="M4 31c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#3498db"/>
                             <circle cx="9.6" cy="31" r="3.2" fill="#fff"/>
                         </g>
-                        <!-- Pin 2 (bottom right, fully visible) -->
                         <g>
                             <path d="M22.8 25c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#f1c40f"/>
                             <circle cx="28.4" cy="25" r="3.2" fill="#fff"/>
                         </g>
-                        <!-- Pin 3 (top left, fully visible) -->
                         <g>
                             <path d="M4 9c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#e67e22"/>
                             <circle cx="9.6" cy="9" r="3.2" fill="#fff"/>
                         </g>
-                        <!-- Pin 4 (top right, fully visible) -->
                         <g>
                             <path d="M22.8 3c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#e74c3c"/>
                             <circle cx="28.4" cy="3" r="3.2" fill="#fff"/>
                         </g>
-                    </svg>
                     </svg>
                 </span>
                 Optimize Route
@@ -127,20 +120,20 @@
                         <!-- List of optimized stops -->
                     </ol>
                 </div>
-                <div class="route-buttons-row" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
-                    <button id="export-route" class="btn" style="min-width:160px;">
-                        <span style="vertical-align:middle; display:inline-block; width:1.5em; height:1.5em;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" style="width:1.5em; height:1.5em;">
+                <div class="route-buttons-row">
+                    <button id="export-route" class="btn">
+                        <span class="gmaps-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
                                 <path fill="#48b564" d="M35.76,26.36h0.01c0,0-3.77,5.53-6.94,9.64c-2.74,3.55-3.54,6.59-3.77,8.06 C24.97,44.6,24.53,45,24,45s-0.97-0.4-1.06-0.94c-0.23-1.47-1.03-4.51-3.77-8.06c-0.42-0.55-0.85-1.12-1.28-1.7L28.24,22l8.33-9.88C37.49,14.05,38,16.21,38,18.5C38,21.4,37.17,24.09,35.76,26.36z"></path><path fill="#fcc60e" d="M28.24,22L17.89,34.3c-2.82-3.78-5.66-7.94-5.66-7.94h0.01c-0.3-0.48-0.57-0.97-0.8-1.48L19.76,15c-0.79,0.95-1.26,2.17-1.26,3.5c0,3.04,2.46,5.5,5.5,5.5C25.71,24,27.24,23.22,28.24,22z"></path><path fill="#2c85eb" d="M28.4,4.74l-8.57,10.18L13.27,9.2C15.83,6.02,19.69,4,24,4C25.54,4,27.02,4.26,28.4,4.74z"></path><path fill="#ed5748" d="M19.83,14.92L19.76,15l-8.32,9.88C10.52,22.95,10,20.79,10,18.5c0-3.54,1.23-6.79,3.27-9.3L19.83,14.92z"></path><path fill="#5695f6" d="M28.24,22c0.79-0.95,1.26-2.17,1.26-3.5c0-3.04-2.46-5.5-5.5-5.5c-1.71,0-3.24,0.78-4.24,2L28.4,4.74c3.59,1.22,6.53,3.91,8.17,7.38L28.24,22z"></path>
                             </svg>
                         </span> Open in GMaps
                     </button>
-                    <div id="route-storage-ui" style="display:flex; flex-direction:column; gap:0.5rem; align-items:center;">
-                        <div style="display:flex; gap:0.5rem;">
-                            <button id="save-route" class="btn" style="min-width:140px;"><span style="vertical-align:middle;">💾</span> Save Route</button>
-                            <button id="load-route" class="btn" style="min-width:140px;"><span style="vertical-align:middle;">📂</span> Load Route</button>
+                    <div id="route-storage-ui">
+                        <div>
+                            <button id="save-route" class="btn"><span style="vertical-align:middle;">💾</span> Save</button>
+                            <button id="load-route" class="btn"><span style="vertical-align:middle;">📂</span> Load</button>
                         </div>
-                        <div id="saved-routes-list" style="display:none; background:#fff; border:1px solid #bfc9d1; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:0.5em 1em; min-width:260px; max-height:180px; overflow:auto; z-index:10; position:relative;"></div>
+                        <div id="saved-routes-list"></div>
                     </div>
                 </div>
             </div>
@@ -163,25 +156,6 @@
     <script src="js/api-service.js"></script>
     <script src="js/route-optimizer.js"></script>
     <script src="js/app.js"></script>
-    <script>
-        // Replace deprecated google.maps.places.Autocomplete with PlaceAutocompleteElement
-        const setupAutocomplete = (input) => {
-            // Remove old autocomplete if present
-            if (input._autocompleteElement) {
-                input._autocompleteElement.remove();
-                input._autocompleteElement = null;
-            }
-            // Create the new PlaceAutocompleteElement
-            const autocompleteElement = document.createElement('gmpx-place-autocomplete');
-            autocompleteElement.setAttribute('input-element', input);
-            // Optionally, set more attributes for biasing, etc.
-            input.parentNode.insertBefore(autocompleteElement, input.nextSibling);
-            input._autocompleteElement = autocompleteElement;
-            return autocompleteElement;
-        };
-
-    </script>
-
     <!-- Modal for Route Save/Load -->
     <div id="route-modal" class="modal" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); align-items:center; justify-content:center;">
       <div class="modal-content" style="background:#fff; border-radius:10px; min-width:320px; max-width:90vw; padding:2em 1.5em 1.5em 1.5em; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
