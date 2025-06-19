@@ -351,26 +351,22 @@ const UIController = (() => {
                 return;
             }
             let html = `
-                <h3 style="margin-bottom:1.5em; text-align:center; font-size:1.3em; color:#2c3e50; letter-spacing:0.01em;">Select a saved route</h3>
-                <div style="display:flex; flex-direction:column; gap:0.7em;">
+                <h3 class="modal-title">Select a saved route</h3>
+                <div class="modal-route-list">
             `;
             savedRoutes.forEach((r, i) => {
                 const date = new Date(r.date);
                 const dateString = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) +
                     ' – ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                 html += `
-                <div style="position:relative; background:#f7fafd; border:1px solid #e0e6ed; border-radius:8px; box-shadow:0 2px 8px rgba(44,62,80,0.04); padding:1em 1.2em 1em 1.2em; display:flex; align-items:center; gap:1em; transition:box-shadow 0.2s;">
-                    <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:0.2em;">
-                        <div style="font-size:1.13em; font-weight:600; color:#2261a9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.name}</div>
-                        <div style="color:#888; font-size:0.98em; margin-top:0.1em; text-align:right;">${dateString}</div>
+                <div class="modal-route-entry">
+                    <div class="modal-route-info">
+                        <div class="modal-route-name">${r.name}</div>
+                        <div class="modal-route-date">${dateString}</div>
                     </div>
-                    <div style="display:flex; gap:0.5em;">
-                        <button class='btn' style='background:#e74c3c; color:#fff; font-size:1.1em; border-radius:6px; padding:0.5em 1.2em; font-weight:600; box-shadow:0 1px 4px rgba(231,76,60,0.08); border:none;' title='Delete route' data-delidx='${i}'>
-                            <span style='font-size:1.1em; vertical-align:middle;'>🗑️</span> Delete
-                        </button>
-                        <button class='btn' style='background:#2ecc71; color:#fff; font-size:1.1em; border-radius:6px; padding:0.5em 1.2em; font-weight:600; box-shadow:0 1px 4px rgba(46,204,113,0.08); border:none;' data-idx='${i}'>
-                            <span style='font-size:1.1em; vertical-align:middle;'>📂</span> Load
-                        </button>
+                    <div class="modal-route-actions">
+                        <button class="btn modal-btn modal-btn-delete" title="Delete route" data-delidx="${i}"><span style="font-size:1.1em; vertical-align:middle;">🗑️</span></button>
+                        <button class="btn modal-btn modal-btn-load" data-idx="${i}"><span style="font-size:1.1em; vertical-align:middle;">📂</span></button>
                     </div>
                 </div>
                 `;
@@ -423,11 +419,11 @@ const UIController = (() => {
                 if (!window.currentOptimizedRoute) {
                     throw new Error('No route available to save');
                 }
-                let html = `<h3 style='margin-bottom:1.2em; text-align:center;'>Save current route</h3>
-                    <form id='route-save-form' style='display:flex; flex-direction:column; align-items:center; gap:1em;'>
-                        <label for='route-name-input' style='font-weight:600; width:100%; text-align:left;'>Route name:</label>
-                        <input id='route-name-input' type='text' style='width:100%; max-width:320px; padding:0.6em; border-radius:6px; border:1px solid #bfc9d1; font-size:1.1em;'>
-                        <button id='route-name-save-btn' class='btn' style='width:100%; max-width:200px; margin-top:0.5em; align-self:center;'><span style="vertical-align:middle;">💾</span> Save</button>
+                let html = `<h3 class="modal-title">Save current route</h3>
+                    <form id="route-save-form" class="modal-form">
+                        <label for="route-name-input" class="modal-label">Route name:</label>
+                        <input id="route-name-input" type="text" class="modal-input">
+                        <button id="route-name-save-btn" class="btn modal-btn"><span style="vertical-align:middle;">💾</span> Save</button>
                     </form>`;
                 this.showRouteModal(html);
                 document.getElementById('route-name-input').focus();
@@ -453,7 +449,6 @@ const UIController = (() => {
                     });
                     localStorage.setItem('savedRoutes', JSON.stringify(savedRoutes));
                     document.getElementById('route-modal').style.display = 'none';
-                    alert(`Route "${routeName}" has been saved successfully!`);
                     UIController.setLoadRouteButtonState(true);
                 };
                 document.getElementById('route-save-form').onsubmit = saveHandler;

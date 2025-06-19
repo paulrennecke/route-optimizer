@@ -579,3 +579,161 @@ h2 {
     outline: none;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
+
+/* Modal Styles for better mobile support */
+.modal {
+  display: none; /* default hidden */
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  min-width: 320px;
+  max-width: 90vw;
+  padding: 2em 1.5em 1.5em 1.5em;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  min-width: 0;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.modal-label {
+  font-weight: 600;
+  width: 100%;
+  text-align: left;
+}
+
+.modal-input {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6em;
+  border-radius: 6px;
+  border: 1px solid #bfc9d1;
+  font-size: 1.1em;
+  box-sizing: border-box;
+}
+
+.modal-btn {
+  width: 100%;
+  max-width: 200px;
+  margin-top: 0.5em;
+  align-self: center;
+  padding: 0.6em 1em;
+  font-size: 1em;
+  min-width: 90px;
+}
+
+.modal-route-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+}
+
+.modal-route-entry {
+  position: relative;
+  background: #f7fafd;
+  border: 1px solid #e0e6ed;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.04);
+  padding: 1em 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  transition: box-shadow 0.2s;
+}
+
+.modal-route-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.modal-route-name {
+  font-size: 1.13em;
+  font-weight: 600;
+  color: #2261a9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-route-date {
+  color: #888;
+  font-size: 0.98em;
+  margin-top: 0.1em;
+  text-align: right;
+}
+
+.modal-route-actions {
+  display: flex;
+  gap: 0.5em;
+}
+
+.modal-btn-delete {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.modal-btn-load {
+  background: #2ecc71;
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    min-width: unset;
+    width: 99vw;
+    max-width: 99vw;
+    border-radius: 0.7em;
+    padding: 0.7em 0.2em 0.7em 0.2em;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-form {
+    max-width: 99vw;
+    padding: 0;
+  }
+  .modal-btn {
+    font-size: 0.98em;
+    padding: 0.5em 0.7em;
+    min-width: 70px;
+    max-width: 98vw;
+  }
+  .modal-route-entry {
+    padding: 0.7em 0.5em;
+    gap: 0.5em;
+  }
+}
