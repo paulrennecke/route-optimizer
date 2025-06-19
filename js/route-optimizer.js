@@ -98,10 +98,9 @@ const RouteOptimizer = (() => {
                     totalDistance: `${(totalDistance / 1000).toFixed(1)} km`,
                     totalDuration: formatDuration(totalDuration),
                     travelMode: formatTravelMode(travelMode),
-                    rawData: { distance: totalDistance, duration: totalDuration, travelModeValue: travelMode }
                 };
             } catch (error) {
-                throw new Error(`Route optimization error: ${error}`);
+                throw error;
             }
         },
         optimizeRouteWithDirectionsApi: (locationData, travelMode = 'DRIVING') => new Promise((resolve, reject) => {
@@ -131,7 +130,6 @@ const RouteOptimizer = (() => {
                             totalDistance: `${(totalDistance / 1000).toFixed(1)} km`,
                             totalDuration: formatDuration(totalDuration),
                             travelMode: formatTravelMode(travelMode),
-                            rawData: { distance: totalDistance, duration: totalDuration, directionsResult: response, travelModeValue: travelMode }
                         });
                     } else {
                         reject(`Route optimization error: ${status}`);

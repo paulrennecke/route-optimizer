@@ -231,7 +231,7 @@ const UIController = (() => {
                 if (startInput && !isMobile) startInput.focus();
             }, 0);
 
-            // Initial ein leeres Waypoint-Feld
+            // Initial empty waypoint field
             ensureEmptyWaypointAtEnd();
 
             // Add combined autocomplete to all address fields (including start and end)
@@ -239,7 +239,7 @@ const UIController = (() => {
             addressFields.forEach(field => {
                 setupCombinedAutocomplete(field);
             });
-            // Event listeners für export, save und load
+            // Event listeners for export, save, and load
             document.getElementById('export-route').addEventListener('click', this.exportRoute);
             document.getElementById('save-route').addEventListener('click', () => UIController.saveRoute());
             document.getElementById('load-route').addEventListener('click', () => UIController.loadRoute());
@@ -286,7 +286,7 @@ const UIController = (() => {
             optimizedRoute.stops.forEach((stop, index) => {
                 const li = document.createElement('li');
                 let stopText = stop.address;
-                // Kontaktname anzeigen, falls vorhanden
+                // Show contact name if available
                 if (contactAddressNameMap.has(stop.address)) {
                     stopText = `${contactAddressNameMap.get(stop.address)} — ${stop.address}`;
                 }
@@ -426,7 +426,6 @@ const UIController = (() => {
                     </form>`;
                 this.showRouteModal(html);
                 document.getElementById('route-name-input').focus();
-                // Save sowohl auf Button als auch auf Form-Submit binden
                 const saveHandler = (e) => {
                     e.preventDefault();
                     const routeName = document.getElementById('route-name-input').value.trim();
@@ -435,7 +434,6 @@ const UIController = (() => {
                         return;
                     }
                     const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
-                    // Nur das neue Format speichern
                     const addresses = {
                         start: document.getElementById('start').value.trim(),
                         end: document.getElementById('end').value.trim(),
@@ -453,7 +451,7 @@ const UIController = (() => {
                 document.getElementById('route-save-form').onsubmit = saveHandler;
                 document.getElementById('route-name-save-btn').onclick = saveHandler;
             } catch (error) {
-                UIController.showError('Route could not be saved: ' + error.message);
+                UIController.showError(error.message);
             }
         },
         // Add Google Contacts login handler using Google Identity Services (GIS)
@@ -540,124 +538,3 @@ const UIController = (() => {
         }
     };
 })();
-
-// Silent Auth: Check on load if user is still logged in
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.google && window.accounts && window.google.accounts.oauth2) {
-        Config.load().then(() => {
-            const clientId = Config.get('GOOGLE_CLIENT_ID');
-            if (!clientId) return;
-            const tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: clientId,
-                scope: 'https://www.googleapis.com/auth/contacts.readonly',
-                prompt: 'none', // Silent
-                callback: (response) => {
-                    if (response && response.access_token) {
-                        // Show logged-in status
-                        const btn = document.getElementById('import-google-contacts');
-                        if (btn) {
-                            btn.disabled = true;
-                            btn.innerHTML = '<span style="color:#2980b9;font-size:1.2em;vertical-align:middle;margin-right:0.5em;">&#x2714;</span>Google Contacts loaded';
-                            btn.style.background = '#eaf6ff';
-                            btn.style.color = '#2980b9';
-                            btn.style.border = '1px solid #2980b9';
-                            btn.style.cursor = 'default';
-                        }
-                        // Load contacts
-                        UIController._contacts = [];
-                        fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,addresses&pageSize=1000', {
-                            headers: {
-                                'Authorization': 'Bearer ' + response.access_token
-                            }
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            UIController._processContactsData(data);
-                            if (data.nextPageToken) {
-                                UIController._fetchAllContacts(response.access_token, data.nextPageToken);
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Error fetching contacts:', err);
-                        });
-                    }
-                }
-            });
-            tokenClient.requestAccessToken();
-        });
-    }
-});
-
-// Hilfsfunktion: Adressen aus Kontakten automatisch formatieren
-async function normalizeAllContactAddresses() {
-    if (!UIController._contacts || UIController._contacts.length === 0) return;
-    for (let c of UIController._contacts) {
-        if (c.address) {
-            try {
-                c.address = await APIService.geocodeAddress(c.address);
-            } catch (e) {
-                // Fehler ignorieren, Originaladresse bleibt
-            }
-        }
-    }
-}
-
-// Map from address to contact name for display
-const contactAddressNameMap = new Map();
-// Hook: After loading contacts, update the map
-const origProcessContactsData = UIController._processContactsData;
-UIController._processContactsData = function(data) {
-    origProcessContactsData.call(UIController, data);
-    if (UIController._contacts) {
-        for (const c of UIController._contacts) {
-            if (c.address && c.name) {
-                contactAddressNameMap.set(c.address, c.name);
-            }
-        }
-    }
-    normalizeAllContactAddresses();
-};
-
-window.optimizeRouteFromUI = async function() {
-    try {
-        UIController.setLoadingState(true);
-        const addresses = UIController.collectAddresses();
-        if (!addresses.start || !addresses.end) {
-            throw new Error('Start and destination must be specified.');
-        }
-        const locations = await MapHandler.geocodeAddresses(addresses);
-        const optSelect = document.getElementById('optimization-preference');
-        if (!optSelect) throw new Error('No optimization preference selected or found!');
-        const optimizationPreference = optSelect.value;
-        const travelSelect = document.getElementById('travel-mode');
-        if (!travelSelect) throw new Error('No travel mode selected or found!');
-        const travelMode = travelSelect.value;
-        let optimizedRoute;
-        if (locations.waypoints.length <= 10) {
-            try {
-                optimizedRoute = await RouteOptimizer.optimizeRouteWithDirectionsApi(locations, travelMode);
-            } catch (error) {
-                optimizedRoute = await RouteOptimizer.optimizeRoute(locations, optimizationPreference, travelMode);
-            }
-        } else {
-            optimizedRoute = await RouteOptimizer.optimizeRoute(locations, optimizationPreference, travelMode);
-        }
-        UIController.displayResults(optimizedRoute);
-        MapHandler.displayRoute(optimizedRoute, travelMode);
-    } catch (error) {
-        UIController.showError(error.message);
-    } finally {
-        UIController.setLoadingState(false);
-    }
-};
-
-// Ensure UIController.init is called after DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (UIController && typeof UIController.init === 'function') UIController.init();
-        if (UIController && typeof UIController.initGoogleContactsLogin === 'function') UIController.initGoogleContactsLogin();
-    });
-} else {
-    if (UIController && typeof UIController.init === 'function') UIController.init();
-    if (UIController && typeof UIController.initGoogleContactsLogin === 'function') UIController.initGoogleContactsLogin();
-}

@@ -1,4 +1,3 @@
-// Main entry point of the application
 let googleMapsLoaded = false;
 
 const initializeApp = async () => {
@@ -41,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Start and destination must be specified.');
             }
             const locations = await MapHandler.geocodeAddresses(addresses);
-            // Hole die Werte jetzt aus den Dropdowns statt aus Radio-Buttons
             const optSelect = document.getElementById('optimization-preference');
             if (!optSelect) throw new Error('No optimization preference selected or found!');
             const optimizationPreference = optSelect.value;
@@ -62,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             UIController.displayResults(optimizedRoute);
             MapHandler.displayRoute(optimizedRoute, travelMode);
         } catch (error) {
-            if (typeof error.message === 'string' && error.message.includes('keine Verbindung') || error.message.includes('NO_ROUTE') || error.message.includes('ZERO_RESULTS')) {
+            if (typeof error.message === 'string' && error.message.includes('NO_ROUTE') || error.message.includes('ZERO_RESULTS')) {
                 UIController.showError('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
             } else {
                 UIController.showError(error.message);
@@ -77,13 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedRoutes = await APIService.getSavedRoutes();
             if (savedRoutes?.length > 0) {
                 console.log(`${savedRoutes.length} saved routes found:`, savedRoutes);
-                // Implement UI for saved routes if needed
             }
         } catch (error) {
             console.warn('Error loading saved routes:', error);
         }
     })();
-    document.addEventListener('click', event => {
-        // Placeholder for event delegation for dynamic elements
-    });
 });
