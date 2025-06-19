@@ -1,4 +1,3 @@
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -491,4 +490,11 @@ h2 {
 .route-buttons-row > div {
     display: flex;
     gap: 0.5rem;
+}
+
+.custom-autocomplete-dropdown .autocomplete-item.selected {
+  background: #eaf6ff;
+  color: #2261a9;
+  font-weight: bold;
+  border-left: 4px solid #2261a9;
 }

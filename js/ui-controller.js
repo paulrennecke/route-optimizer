@@ -45,6 +45,8 @@ const UIController = (() => {
     const setupCombinedAutocomplete = input => {
         let dropdown, placesService, sessionToken;
         const removeDropdown = () => { dropdown?.remove(); dropdown = null; };
+        let selectedIndex = -1;
+        let currentSuggestions = [];
         const showDropdown = suggestions => {
             removeDropdown();
             if (!suggestions.length) return;
@@ -55,28 +57,71 @@ const UIController = (() => {
                 left: input.getBoundingClientRect().left + window.scrollX + 'px',
                 top: input.getBoundingClientRect().bottom + window.scrollY + 'px'
             });
-            suggestions.forEach(s => {
+            currentSuggestions = suggestions;
+            // Select the first suggestion by default
+            selectedIndex = 0;
+            suggestions.forEach((s, idx) => {
                 const item = createElement('div', { className: 'autocomplete-item' });
                 Object.assign(item.style, { padding: '0.5em 1em', cursor: 'pointer' });
                 item.innerHTML = s.type === 'contact'
                     ? `<span style="color:#2980b9;font-weight:bold;">${s.label}</span> <span style="background:#eaf6ff;color:#2980b9;font-size:0.85em;padding:2px 6px;border-radius:6px;margin-left:8px;">Contact</span>`
                     : s.label;
+                if (idx === 0) item.classList.add('selected');
                 item.addEventListener('mousedown', e => {
                     e.preventDefault();
-                    if (s.type === 'contact') {
-                        input.value = `${s.label}`; // Name und Adresse eintragen
-                        input.setAttribute('data-contact', '1');
-                    } else if (s.type === 'place') {
-                        input.value = s.value;
-                        input.removeAttribute('data-contact');
-                    }
-                    removeDropdown();
-                    input.dispatchEvent(new Event('change'));
+                    selectSuggestion(idx);
                 });
                 dropdown.appendChild(item);
             });
             document.body.appendChild(dropdown);
         };
+        function selectSuggestion(idx) {
+            const s = currentSuggestions[idx];
+            if (!s) return;
+            if (s.type === 'contact') {
+                input.value = `${s.label}`;
+                input.setAttribute('data-contact', '1');
+            } else if (s.type === 'place') {
+                input.value = s.value;
+                input.removeAttribute('data-contact');
+            }
+            removeDropdown();
+            input.dispatchEvent(new Event('change'));
+            // Move to next input field
+            const focusable = Array.from(document.querySelectorAll('input, button, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el => !el.disabled && el.tabIndex >= 0);
+            const idxInput = focusable.indexOf(input);
+            if (idxInput !== -1 && idxInput + 1 < focusable.length) {
+                focusable[idxInput + 1].focus();
+            }
+        }
+        input.addEventListener('keydown', function(e) {
+            if (!dropdown) return;
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                items.forEach((el, i) => el.classList.toggle('selected', i === selectedIndex));
+                items[selectedIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                items.forEach((el, i) => el.classList.toggle('selected', i === selectedIndex));
+                items[selectedIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                if (selectedIndex >= 0) {
+                    e.preventDefault();
+                    selectSuggestion(selectedIndex);
+                }
+            } else {
+                // On any other key, after suggestions update, re-apply selected class
+                setTimeout(() => {
+                    const items = dropdown?.querySelectorAll('.autocomplete-item');
+                    if (items && items.length > 0) {
+                        items.forEach((el, i) => el.classList.toggle('selected', i === selectedIndex));
+                    }
+                }, 0);
+            }
+        });
         const updateSuggestions = async () => {
             const val = input.value.trim();
             if (!val) return removeDropdown();
@@ -94,7 +139,18 @@ const UIController = (() => {
             });
         };
         input.addEventListener('input', updateSuggestions);
-        input.addEventListener('focus', updateSuggestions);
+        input.addEventListener('focus', event => {
+            updateSuggestions();
+            // Mobile scroll-into-view optimization (faster)
+            if (window.innerWidth <= 800) {
+                // Use requestAnimationFrame for faster response, no delay
+                requestAnimationFrame(() => {
+                    const rect = input.getBoundingClientRect();
+                    const scrollY = window.scrollY + rect.top - 40; // smaller offset for dropdown
+                    window.scrollTo({ top: scrollY, behavior: 'auto' }); // instant scroll
+                });
+            }
+        });
         input.addEventListener('blur', () => setTimeout(removeDropdown, 200));
         input.addEventListener('change', () => {
             const val = input.value.trim();
@@ -113,16 +169,42 @@ const UIController = (() => {
     // Public methods
     return {
         init: () => {
+            // Focus start location input on page load (after DOM is ready)
+            setTimeout(() => {
+                const startInput = document.getElementById('start');
+                if (startInput) startInput.focus();
+            }, 0);
             // Event Listener for "Add Waypoint" button
             addWaypointButton.addEventListener('click', () => {
+                // Only add a new waypoint if the last one is not empty
+                const allWaypoints = waypointsContainer.querySelectorAll('.waypoint');
+                if (allWaypoints.length > 0 && !allWaypoints[allWaypoints.length - 1].value.trim()) {
+                    allWaypoints[allWaypoints.length - 1].focus();
+                    return;
+                }
                 waypointCounter++;
                 const waypointElement = createWaypointElement(waypointCounter);
                 waypointsContainer.appendChild(waypointElement);
                 // Initialize combined autocomplete for new input field
                 const input = waypointElement.querySelector('.address-autocomplete');
                 setupCombinedAutocomplete(input);
+                // Focus the new input automatically
+                input.focus();
+                // Enable tabbing: If user presses Tab or Enter on the last waypoint input, add a new waypoint
+                input.addEventListener('keydown', function(e) {
+                    if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
+                        // Only if this is the last waypoint input and not empty
+                        const allWaypoints = waypointsContainer.querySelectorAll('.waypoint');
+                        if (allWaypoints[allWaypoints.length - 1] === input && input.value.trim()) {
+                            e.preventDefault();
+                            addWaypointButton.click();
+                        }
+                    }
+                });
             });
-            // Add combined autocomplete to all address fields
+            // Add one waypoint at start
+            addWaypointButton.click();
+            // Add combined autocomplete to all address fields (including start and end)
             const addressFields = document.querySelectorAll('.address-autocomplete');
             addressFields.forEach(field => {
                 setupCombinedAutocomplete(field);
@@ -163,7 +245,6 @@ const UIController = (() => {
         },
         displayResults: optimizedRoute => {
             resultsSection.classList.remove('hidden');
-            // Buttons aktivieren
             UIController.setResultsButtonsState(true);
 
             // Display total distance and duration
@@ -439,7 +520,7 @@ const UIController = (() => {
 
 // Silent Auth: Check on load if user is still logged in
 document.addEventListener('DOMContentLoaded', function() {
-    if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+    if (window.google && window.accounts && window.google.accounts.oauth2) {
         Config.load().then(() => {
             const clientId = Config.get('GOOGLE_CLIENT_ID');
             if (!clientId) return;
@@ -542,3 +623,14 @@ window.optimizeRouteFromUI = async function() {
         UIController.setLoadingState(false);
     }
 };
+
+// Ensure UIController.init is called after DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (UIController && typeof UIController.init === 'function') UIController.init();
+        if (UIController && typeof UIController.initGoogleContactsLogin === 'function') UIController.initGoogleContactsLogin();
+    });
+} else {
+    if (UIController && typeof UIController.init === 'function') UIController.init();
+    if (UIController && typeof UIController.initGoogleContactsLogin === 'function') UIController.initGoogleContactsLogin();
+}
