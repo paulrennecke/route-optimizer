@@ -3,7 +3,6 @@
 const UIController = (() => {
     let waypointCounter = 0;
     const waypointsContainer = document.getElementById('waypoints-container');
-    const addWaypointButton = document.getElementById('add-waypoint');
     const resultsSection = document.getElementById('results');
     const contactAddressNameMap = new Map();
     
@@ -16,24 +15,50 @@ const UIController = (() => {
         return el;
     };
 
-    // Waypoint element
+    const renderWaypoints = () => {
+        waypointsContainer.innerHTML = '';
+        const allWaypoints = Array.from(document.querySelectorAll('.waypoint'));
+        allWaypoints.forEach((input, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'waypoint-inline';
+            // Nummer vor das Input-Feld
+            const number = document.createElement('span');
+            number.className = 'waypoint-number';
+            number.textContent = (idx + 1) + '.';
+            wrapper.appendChild(number);
+            wrapper.appendChild(input);
+            waypointsContainer.appendChild(wrapper);
+        });
+    };
+
     const createWaypointElement = id => {
-        const div = createElement('div', { className: 'waypoint-item' });
-        const addressInput = createElement('div', { className: 'address-input' });
-        const label = createElement('label', { attrs: { for: `waypoint-${id}` }, text: `Waypoint ${id}:` });
+        const wrapper = createElement('div', { className: 'waypoint-inline address-input' });
+        const number = createElement('span', { className: 'waypoint-number', text: id + '.' });
         const input = createElement('input', {
             className: 'waypoint address-autocomplete',
             attrs: { type: 'text', id: `waypoint-${id}`, placeholder: 'Enter address' }
         });
-        addressInput.append(label, input);
         const removeButton = createElement('button', {
             className: 'remove-waypoint',
-            attrs: { type: 'button', 'data-id': id },
+            attrs: { type: 'button', 'data-id': id, tabindex: '-1' },
             text: '\u00d7'
         });
-        removeButton.addEventListener('click', () => removeWaypoint(id));
-        div.append(addressInput, removeButton);
-        return div;
+        removeButton.addEventListener('click', () => {
+            wrapper.remove();
+            ensureEmptyWaypointAtEnd();
+        });
+        wrapper.appendChild(number);
+        wrapper.appendChild(input);
+        wrapper.appendChild(removeButton);
+        return wrapper;
+    };
+
+    const updateWaypointNumbers = () => {
+        const wrappers = waypointsContainer.querySelectorAll('.waypoint-inline');
+        wrappers.forEach((w, idx) => {
+            const num = w.querySelector('.waypoint-number');
+            if (num) num.textContent = (idx + 1) + '.';
+        });
     };
 
     const removeWaypoint = id => {
@@ -166,6 +191,37 @@ const UIController = (() => {
         });
     };
     
+    function ensureEmptyWaypointAtEnd() {
+        const wrappers = Array.from(waypointsContainer.querySelectorAll('.waypoint-inline'));
+        for (let i = wrappers.length - 1; i > 0; i--) {
+            const input = wrappers[i].querySelector('input.waypoint');
+            if (input && !input.value.trim()) {
+                wrappers[i].remove();
+            } else {
+                break;
+            }
+        }
+        const last = waypointsContainer.querySelector('.waypoint-inline:last-child input.waypoint');
+        if (!last || last.value.trim()) {
+            waypointCounter++;
+            const wrapper = createWaypointElement(waypointCounter);
+            waypointsContainer.appendChild(wrapper);
+            const input = wrapper.querySelector('input.waypoint');
+            setupCombinedAutocomplete(input);
+            input.addEventListener('input', ensureEmptyWaypointAtEnd);
+            input.addEventListener('keydown', function(e) {
+                if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
+                    const allInputs = waypointsContainer.querySelectorAll('input.waypoint');
+                    if (allInputs[allInputs.length - 1] === input && input.value.trim()) {
+                        e.preventDefault();
+                        ensureEmptyWaypointAtEnd();
+                    }
+                }
+            });
+        }
+        updateWaypointNumbers();
+    }
+
     // Public methods
     return {
         init: () => {
@@ -174,49 +230,21 @@ const UIController = (() => {
                 const startInput = document.getElementById('start');
                 if (startInput) startInput.focus();
             }, 0);
-            // Event Listener for "Add Waypoint" button
-            addWaypointButton.addEventListener('click', () => {
-                // Only add a new waypoint if the last one is not empty
-                const allWaypoints = waypointsContainer.querySelectorAll('.waypoint');
-                if (allWaypoints.length > 0 && !allWaypoints[allWaypoints.length - 1].value.trim()) {
-                    allWaypoints[allWaypoints.length - 1].focus();
-                    return;
-                }
-                waypointCounter++;
-                const waypointElement = createWaypointElement(waypointCounter);
-                waypointsContainer.appendChild(waypointElement);
-                // Initialize combined autocomplete for new input field
-                const input = waypointElement.querySelector('.address-autocomplete');
-                setupCombinedAutocomplete(input);
-                // Focus the new input automatically
-                input.focus();
-                // Enable tabbing: If user presses Tab or Enter on the last waypoint input, add a new waypoint
-                input.addEventListener('keydown', function(e) {
-                    if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
-                        // Only if this is the last waypoint input and not empty
-                        const allWaypoints = waypointsContainer.querySelectorAll('.waypoint');
-                        if (allWaypoints[allWaypoints.length - 1] === input && input.value.trim()) {
-                            e.preventDefault();
-                            addWaypointButton.click();
-                        }
-                    }
-                });
-            });
-            // Add one waypoint at start
-            addWaypointButton.click();
+
+            // Initial ein leeres Waypoint-Feld
+            ensureEmptyWaypointAtEnd();
+
             // Add combined autocomplete to all address fields (including start and end)
             const addressFields = document.querySelectorAll('.address-autocomplete');
             addressFields.forEach(field => {
                 setupCombinedAutocomplete(field);
             });
-            // Event listeners for export and save buttons
+            // Event listeners für export und save
             document.getElementById('export-route').addEventListener('click', this.exportRoute);
             document.getElementById('save-route').addEventListener('click', () => UIController.saveRoute());
             document.getElementById('load-route').addEventListener('click', () => UIController.loadRoute());
-            // Buttons initial deaktivieren
             UIController.setResultsButtonsState(false);
             UIController.setLoadRouteButtonState(localStorage.getItem('savedRoutes') && JSON.parse(localStorage.getItem('savedRoutes')).length > 0);
-            // Add Google Contacts login handler
             UIController.initGoogleContactsLogin();
         },
           collectAddresses: function() {

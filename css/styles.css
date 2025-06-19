@@ -498,3 +498,41 @@ h2 {
   font-weight: bold;
   border-left: 4px solid #2261a9;
 }
+
+.waypoint-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+}
+.waypoint-number {
+    font-weight: bold;
+    min-width: 1.5em;
+    text-align: right;
+    color: #2c3e50;
+}
+.remove-waypoint {
+    background: none;
+    border: none;
+    color: #c0392b;
+    font-size: 1.2em;
+    margin-left: 0.3em;
+    cursor: pointer;
+    padding: 0 0.3em;
+    line-height: 1;
+}
+.waypoint-inline input.waypoint {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.05rem;
+    transition: border-color 0.2s;
+    background-color: white;
+    margin-bottom: 0;
+}
+.waypoint-inline input.waypoint:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
