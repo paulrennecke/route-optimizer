@@ -1,11 +1,12 @@
 # Waypoint Optimizer
 
-A web application that can optimize the order of waypoints in Google Maps routes.
+A web application that can optimize the order of waypoints in Google Maps routes using data from your Google Contacts.
 
 ###  [Live Demo](https://paul-rennecke.de/route)
 
 ## Installation and Setup
 
+1. **Clone the repository:**
 ```bash
 git clone git@github.com:paulrennecke/route-optimizer.git
 cd Route
@@ -18,17 +19,21 @@ cd Route
    - Maps JavaScript API
    - Places API
    - Directions API
- - Create the required API key
+   - People API
+ - Create the required API key and OAuth 2.0 Client ID
 
 3. **Configure Environment Variables:**
 ```bash
 # Copy the template
 copy .env.example .env
 ```
-Edit the `.env` file and enter your generated API key:
+Edit the `.env` file and enter your generated API key and Client ID:
 ```env
 # Google Maps API Configuration
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+
+# Google OAuth 2.0 Client ID for Contacts Integration
+GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
 
@@ -39,7 +44,8 @@ GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 3. Choose optimization preference (shortest distance or fastest time)
 4. Click "Optimize Route"
 5. The optimized route will be displayed on the map, along with a list of stops
+6. To import addresses from Google Contacts, click "Load Google Contacts"
 
-## License
+## Note
 
-This project is licensed under the MIT License.
+This project was created as part of "Vibe coding". Please keep this in mind.

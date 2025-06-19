@@ -1,4 +1,3 @@
-/* Grundlegende Stile */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,72 +6,93 @@
 
 body {
     font-family: Arial, sans-serif;
-    line-height: 1.6;
+    line-height: 1.4;
     color: #333;
     background-color: #f4f4f4;
+    min-width: 320px;
+    font-size: 0.97rem;
 }
 
 header {
     background-color: #2c3e50;
     color: white;
-    padding: 1.2rem;
+    padding: 0.7rem;
     text-align: center;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 0.7rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.2em;
 }
 
 main {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 1.5rem;
+    padding: 0.7rem;
+    min-width: 320px;
 }
 
 footer {
     background-color: #2c3e50;
     color: white;
     text-align: center;
-    padding: 1rem;
-    margin-top: 2.5rem;
+    padding: 0.7rem;
+    margin-top: 1.5rem;
 }
 
-/* Abschnittsgestaltung */
 section {
     background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-    padding: 2rem;
-    margin-bottom: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    padding: 1rem 1rem 0.7rem 1rem;
+    margin-bottom: 1rem;
+}
+
+section {
+    padding: 1rem 1rem 0.7rem 1rem;
+    margin-bottom: 1rem;
 }
 
 h2 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.3rem;
     color: #2c3e50;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
 }
 
-/* Eingabebereich */
+#inputs h2,
+#results h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3em;
+}
+
 .address-container {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .address-input {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.7rem;
     position: relative;
 }
 
 .address-input label {
     display: block;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.3rem;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 0.98rem;
+}
+
+.address-input label {
+    font-size: 0.98rem;
 }
 
 .address-input input {
     width: 100%;
-    padding: 1rem;
+    padding: 0.5rem;
     border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1.05rem;
+    border-radius: 5px;
+    font-size: 0.98rem;
     transition: border-color 0.2s;
 }
 
@@ -82,45 +102,53 @@ h2 {
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
+.address-input input {
+    padding: 0.5rem;
+    font-size: 0.98rem;
+}
+
 .options-container {
-    margin-bottom: 2rem;
-    padding-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding-top: 0.2rem;
 }
 
 .option {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.7rem;
 }
 
 .option label {
     display: block;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.3rem;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 0.98rem;
+}
+
+.option label {
+    font-size: 0.98rem;
 }
 
 .option select {
     width: 100%;
-    padding: 1rem;
+    padding: 0.5rem;
     border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1.05rem;
+    border-radius: 5px;
+    font-size: 0.98rem;
     background-color: white;
 }
 
-/* Buttons */
 .btn {
-    padding: 1rem 2rem;
+    padding: 0.5rem 1.1rem;
     background-color: #3498db;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     transition: all 0.2s;
-    min-width: 180px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin: 0.5rem 0.5rem 0.5rem 0;
+    min-width: 90px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    margin: 0.3rem 0.3rem 0.3rem 0;
 }
 
 .btn:hover {
@@ -131,33 +159,83 @@ h2 {
 
 .btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
 .btn.primary {
     background-color: #2ecc71;
-    font-size: 1.2rem;
-    padding: 1.2rem 2.5rem;
-    min-width: 220px;
+    font-size: 1rem;
+    padding: 0.7rem 1.2rem;
+    min-width: 120px;
     display: block;
-    margin: 1.5rem auto 0.5rem auto;
+    margin: 0.7rem auto 0.3rem auto;
 }
 
 .btn.primary:hover {
     background-color: #27ae60;
 }
 
+.btn:disabled, .btn[disabled] {
+    background-color: #bfc9d1 !important;
+    color: #eaeaea !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    opacity: 0.7;
+}
+
 #add-waypoint {
     margin-bottom: 1.5rem;
 }
 
-/* Karte */
+.addresses-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2em;
+    margin-bottom: 0.5em;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+.addresses-header-row > h2 {
+    flex: 1 1 auto;
+    min-width: 120px;
+    margin-bottom: 0;
+}
+
+.google-contacts-btn {
+    flex: 0 1 auto;
+    min-width: 120px;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.google-contacts-btn svg {
+    width: 1.1em !important;
+    height: 1.1em !important;
+    min-width: 1.1em !important;
+    min-height: 1.1em !important;
+    margin-right: 0.3em;
+    flex-shrink: 0;
+}
+
+.google-contacts-btn:hover {
+    background: #2980b9;
+    color: #fff;
+    border-color: #2980b9;
+}
+
+.google-contacts-btn:hover svg {
+    filter: brightness(0) invert(1);
+}
+
 #map-container {
-    height: 500px;
-    margin-top: 1rem;
-    border-radius: 8px;
+    height: 320px;
+    margin-top: 0.7rem;
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
 }
 
 #map {
@@ -165,14 +243,56 @@ h2 {
     height: 100%;
 }
 
-/* Responsives Design */
+.route-calc-icon {
+    vertical-align: middle;
+    display: inline-block;
+    width: 1.3em;
+    height: 1.3em;
+    margin-right: 0.3em;
+}
+
+.gmaps-icon {
+    vertical-align: middle;
+    display: inline-block;
+    width: 1.1em;
+    height: 1.1em;
+    margin-right: 0.2em;
+}
+
+.route-calc-icon svg,
+.gmaps-icon svg,
+#inputs .google-contacts-btn svg,
+.github-link-fixed svg {
+    width: 1em !important;
+    height: 1em !important;
+    min-width: 1em !important;
+    min-height: 1em !important;
+    max-width: 1em !important;
+    max-height: 1em !important;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.route-calc-icon,
+.gmaps-icon {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.2em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#inputs .google-contacts-btn svg {
+    margin-right: 0.2em;
+}
+
 @media (min-width: 768px) {
     #results {
         display: grid;
         grid-template-columns: 1fr 2fr;
         gap: 2rem;
     }
-    
     .btn {
         display: inline-block;
     }
@@ -182,24 +302,27 @@ h2 {
     .btn {
         display: block;
         width: 100%;
-        margin: 0.75rem 0;
+        margin: 0.5rem 0;
+    }
+    main {
+        padding: 0.3rem;
+    }
+    section {
+        padding: 0.5rem 0.5rem 0.3rem 0.5rem;
+    }
+    #map-container {
+        height: 180px;
     }
 }
 
-/* Utility-Klassen */
-.hidden {
-    display: none;
-}
-
-/* Zwischenstopp-Container */
 .waypoint-item {
     display: flex;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.7rem;
     background-color: #f9f9f9;
-    padding: 1rem;
-    border-radius: 6px;
-    border-left: 4px solid #3498db;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border-left: 3px solid #3498db;
 }
 
 .waypoint-item .address-input {
@@ -212,9 +335,9 @@ h2 {
     border: none;
     color: #e74c3c;
     cursor: pointer;
-    font-size: 1.5rem;
-    padding: 0 0.5rem;
-    margin-left: 1rem;
+    font-size: 1.1rem;
+    padding: 0 0.3rem;
+    margin-left: 0.5rem;
     transition: transform 0.2s;
 }
 
@@ -223,15 +346,14 @@ h2 {
     color: #c0392b;
 }
 
-/* Optimierte Route Liste */
 .route-summary {
     background-color: #f8f9fa;
-    padding: 1.2rem;
-    border-radius: 6px;
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+    padding: 0.7rem;
+    border-radius: 5px;
+    margin-bottom: 0.7rem;
+    font-size: 0.98rem;
     font-weight: bold;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
 .route-list ol {
@@ -241,11 +363,12 @@ h2 {
 }
 
 .route-list li {
-    padding: 0.8rem 0.5rem;
+    padding: 0.4rem 0.3rem;
     border-bottom: 1px solid #eee;
     list-style: none;
     position: relative;
-    padding-left: 2.5rem;
+    padding-left: 1.3rem;
+    font-size: 0.97rem;
 }
 
 .route-list li:before {
@@ -257,8 +380,8 @@ h2 {
     transform: translateY(-50%);
     background-color: #3498db;
     color: white;
-    width: 1.8rem;
-    height: 1.8rem;
+    width: 1.1rem;
+    height: 1.1rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -270,7 +393,6 @@ h2 {
     border-bottom: none;
 }
 
-/* Ladeanzeige */
 .loading {
     display: inline-block;
     position: relative;
@@ -309,7 +431,6 @@ h2 {
     }
 }
 
-/* Fortbewegungsmittel-Auswahl */
 .travel-mode-container {
     display: flex;
     flex-wrap: wrap;
@@ -358,8 +479,415 @@ h2 {
     font-size: 0.9rem;
 }
 
+.optimization-preference-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+.optimization-preference-option {
+    flex: 1;
+    min-width: 120px;
+}
+.optimization-preference-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.optimization-preference-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0.5rem;
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.optimization-preference-option input[type="radio"]:checked + .optimization-preference-label {
+    background-color: #e3f2fd;
+    border-color: #3498db;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
+}
+.optimization-preference-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.optimization-preference-text {
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+@media (max-width: 480px) {
+    .optimization-preference-container {
+        flex-direction: column;
+    }
+}
+
 @media (max-width: 480px) {
     .travel-mode-container {
         flex-direction: column;
     }
+}
+
+.github-link-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    color: #24292e;
+}
+
+.github-link-fixed svg {
+    color: #000;
+    fill: #000;
+}
+
+.text-decoration-none {
+    text-decoration: none;
+}
+
+.route-buttons-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+    flex-wrap: wrap;
+}
+.route-buttons-row > .btn {
+    min-width: 100px;
+    font-size: 0.95rem;
+}
+#route-storage-ui > div {
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+#route-storage-ui .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    white-space: nowrap;
+    margin: 0;
+    text-align: center;
+}
+@media (max-width: 700px) {
+  .route-buttons-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .route-buttons-row > .btn,
+  #route-storage-ui > div {
+    width: 100%;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  #route-storage-ui .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+  }
+}
+
+.custom-autocomplete-dropdown .autocomplete-item.selected {
+  background: #eaf6ff;
+  color: #2261a9;
+  font-weight: bold;
+  border-left: 4px solid #2261a9;
+}
+
+.waypoint-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+}
+.waypoint-number {
+    font-weight: bold;
+    min-width: 1.5em;
+    text-align: right;
+    color: #2c3e50;
+}
+.remove-waypoint {
+    background: none;
+    border: none;
+    color: #c0392b;
+    font-size: 1.2em;
+    margin-left: 0.3em;
+    cursor: pointer;
+    padding: 0 0.3em;
+    line-height: 1;
+}
+.waypoint-inline input.waypoint {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.98rem;
+    transition: border-color 0.2s;
+    background-color: white;
+    margin-bottom: 0;
+}
+.waypoint-inline input.waypoint:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+/* Modal Styles for better mobile support */
+.modal {
+  display: none; /* default hidden */
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  min-width: 320px;
+  max-width: 90vw;
+  padding: 2em 1.5em 1.5em 1.5em;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  min-width: 0;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.modal-label {
+  font-weight: 600;
+  width: 100%;
+  text-align: left;
+}
+
+.modal-input {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6em;
+  border-radius: 6px;
+  border: 1px solid #bfc9d1;
+  font-size: 1.1em;
+  box-sizing: border-box;
+}
+
+.modal-btn {
+  width: 100%;
+  max-width: 200px;
+  margin-top: 0.5em;
+  align-self: center;
+  padding: 0.6em 1em;
+  font-size: 1em;
+  min-width: 90px;
+}
+
+.modal-route-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+}
+
+.modal-route-entry {
+  position: relative;
+  background: #f7fafd;
+  border: 1px solid #e0e6ed;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.04);
+  padding: 1em 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  transition: box-shadow 0.2s;
+}
+
+.modal-route-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.modal-route-name {
+  font-size: 1.13em;
+  font-weight: 600;
+  color: #2261a9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-route-date {
+  color: #888;
+  font-size: 0.98em;
+  margin-top: 0.1em;
+  text-align: right;
+}
+
+.modal-route-actions {
+  display: flex;
+  gap: 0.5em;
+}
+
+.modal-btn-delete {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.modal-btn-load {
+  background: #2ecc71;
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    min-width: unset;
+    width: 99vw;
+    max-width: 99vw;
+    border-radius: 0.7em;
+    padding: 0.7em 0.2em 0.7em 0.2em;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-form {
+    max-width: 99vw;
+    padding: 0;
+  }
+  .modal-btn {
+    font-size: 0.98em;
+    padding: 0.5em 0.7em;
+    min-width: 70px;
+    max-width: 98vw;
+  }
+  .modal-route-entry {
+    padding: 0.7em 0.5em;
+    gap: 0.5em;
+  }
+  .google-contacts-btn {
+    width: auto;
+    min-width: 120px;
+    justify-content: flex-start;
+    height: 2em;
+    padding: 0 0.8em;
+    margin-top: 0;
+    font-size: 0.97rem;
+  }
+  .addresses-header-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+  }
+}
+@media (max-width: 420px) {
+  .addresses-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5em;
+  }
+  .google-contacts-btn {
+    width: 100%;
+    min-width: unset;
+    justify-content: center;
+    margin-top: 0.5em;
+  }
+}
+
+#route-storage-ui {
+    width: 100%;
+}
+#route-storage-ui > div {
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+#route-storage-ui .btn {
+    flex: 0 0 50%;
+    min-width: 0;
+    width: 50%;
+    white-space: nowrap;
+    margin: 0;
+}
+@media (max-width: 600px) {
+  #route-storage-ui {
+    width: 100%;
+  }
+  #route-storage-ui > div {
+    width: 100%;
+  }
+  #route-storage-ui .btn {
+    width: 50%;
+    flex: 0 0 50%;
+    min-width: 0;
+    margin: 0;
+  }
+}
+
+.address-input.end {
+    margin-top: 1rem;
+}
+
+.icon-dropdown {
+    font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', Arial, sans-serif;
+    font-size: 0.98rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    min-width: 180px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.icon-dropdown option {
+    font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', Arial, sans-serif;
+    font-size: 0.98rem;
+    padding-left: 0.5rem;
+}
+
+.icon-dropdown:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
