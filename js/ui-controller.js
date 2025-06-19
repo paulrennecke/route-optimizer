@@ -98,19 +98,19 @@ const UIController = (() => {
         input.addEventListener('blur', () => setTimeout(removeDropdown, 200));
         input.addEventListener('change', () => {
             const val = input.value.trim();
-            // Prüfe, ob das Feld im Kontakt-Format ist (Name — Adresse)
+            // Check if the field is in contact format (Name — Address)
             const contactMatch = /^(.+)\s+—\s+(.+)$/.exec(val);
             if (contactMatch) {
-                input.value = val; // Name und Adresse stehen schon drin
+                input.value = val; // Name and address already present
                 input.setAttribute('data-contact', '1');
             } else {
-                // Fallback: Nur Adresse anzeigen, data-Attribut entfernen
+                // Fallback: Only show address, remove data attribute
                 input.removeAttribute('data-contact');
             }
         });
     };
     
-    // Öffentliche Methoden
+    // Public methods
     return {
         init: () => {
             // Event Listener for "Add Waypoint" button
@@ -246,8 +246,8 @@ const UIController = (() => {
             `;
             savedRoutes.forEach((r, i) => {
                 const date = new Date(r.date);
-                const dateString = date.toLocaleDateString('de-DE', { year: 'numeric', month: 'short', day: 'numeric' }) +
-                    ' – ' + date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                const dateString = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) +
+                    ' – ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                 html += `
                 <div style="position:relative; background:#f7fafd; border:1px solid #e0e6ed; border-radius:8px; box-shadow:0 2px 8px rgba(44,62,80,0.04); padding:1em 1.2em 1em 1.2em; display:flex; align-items:center; gap:1em; transition:box-shadow 0.2s;">
                     <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:0.2em;">
@@ -267,26 +267,27 @@ const UIController = (() => {
             });
             html += '</div>';
             this.showRouteModal(html);
-            // Button-Handler für Laden
             document.querySelectorAll('#route-modal-body button[data-idx]').forEach(btn => {
                 btn.onclick = async () => {
                     const idx = parseInt(btn.getAttribute('data-idx'), 10);
                     const entry = savedRoutes[idx];
-                    if (!entry.addresses) {
-                        UIController.showError('Diese Route ist im alten Format gespeichert und kann nicht mehr geladen werden. Bitte neu speichern.');
+                    // Support both 'addresses' and 'route.addresses' for backward compatibility
+                    const addresses = entry.addresses || (entry.route && entry.route.addresses);
+                    if (!addresses) {
+                        UIController.showError('This route is in an old or invalid format and cannot be loaded. Please save it again.');
                         return;
                     }
-                    document.getElementById('start').value = entry.addresses.start;
-                    document.getElementById('end').value = entry.addresses.end;
+                    document.getElementById('start').value = addresses.start;
+                    document.getElementById('end').value = addresses.end;
                     const waypointsContainer = document.getElementById('waypoints-container');
                     waypointsContainer.innerHTML = '';
                     waypointCounter = 0;
-                    for (let i = 0; i < entry.addresses.waypoints.length; i++) {
+                    for (let i = 0; i < addresses.waypoints.length; i++) {
                         waypointCounter++;
                         const waypointElement = createWaypointElement(waypointCounter);
                         waypointsContainer.appendChild(waypointElement);
                         const input = waypointElement.querySelector('.address-autocomplete');
-                        input.value = entry.addresses.waypoints[i];
+                        input.value = addresses.waypoints[i];
                         setupCombinedAutocomplete(input);
                     }
                     document.getElementById('route-modal').style.display = 'none';
@@ -296,7 +297,6 @@ const UIController = (() => {
                     }
                 };
             });
-            // Button-Handler für Löschen
             document.querySelectorAll('#route-modal-body button[data-delidx]').forEach(btn => {
                 btn.onclick = (e) => {
                     e.stopPropagation();
@@ -304,7 +304,7 @@ const UIController = (() => {
                     if (!confirm('Delete this route?')) return;
                     savedRoutes.splice(idx, 1);
                     localStorage.setItem('savedRoutes', JSON.stringify(savedRoutes));
-                    UIController.loadRoute(); // Modal neu rendern
+                    UIController.loadRoute();
                 };
             });
         },
@@ -498,9 +498,9 @@ async function normalizeAllContactAddresses() {
     }
 }
 
-// Mappe von Adresse zu Kontaktname für Anzeige
+// Map from address to contact name for display
 const contactAddressNameMap = new Map();
-// Hook: Nach dem Laden der Kontakte Map aktualisieren
+// Hook: After loading contacts, update the map
 const origProcessContactsData = UIController._processContactsData;
 UIController._processContactsData = function(data) {
     origProcessContactsData.call(UIController, data);
@@ -519,7 +519,7 @@ window.optimizeRouteFromUI = async function() {
         UIController.setLoadingState(true);
         const addresses = UIController.collectAddresses();
         if (!addresses.start || !addresses.end) {
-            throw new Error('Start- und Zielpunkt müssen angegeben werden.');
+            throw new Error('Start and destination must be specified.');
         }
         const locations = await MapHandler.geocodeAddresses(addresses);
         const optimizationPreference = document.getElementById('optimization-preference').value;

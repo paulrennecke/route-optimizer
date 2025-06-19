@@ -73,22 +73,19 @@ const MapHandler = (() => {
             });
         },
         geocodeAddresses: async function(addresses) {
-            const geocoder = new google.maps.Geocoder();
-            
-            // Funktion zum Geokodieren einer einzelnen Adresse
-            const geocodeAddress = (address) => {
-                // Extrahiere Adresse aus "Name — Adresse" falls nötig
-                function extractAddress(val) {
-                    const contactMatch = /^(.+)\s+—\s+(.+)$/.exec(val);
-                    if (contactMatch) {
-                        return contactMatch[2].trim();
-                    }
-                    return val.trim();
+            function extractAddress(val) {
+                const contactMatch = /^(.+)\s+—\s+(.+)$/.exec(val);
+                if (contactMatch) {
+                    return contactMatch[2].trim();
                 }
-                
-                const cleanAddress = extractAddress(address);
+                return val.trim();
+            }
+            const cleanAddress = extractAddress;
+            const geocodeAddress = (address) => {
+                const clean = cleanAddress(address);
                 return new Promise((resolve, reject) => {
-                    geocoder.geocode({ address: cleanAddress }, (results, status) => {
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ address: clean }, (results, status) => {
                         if (status === google.maps.GeocoderStatus.OK) {
                             resolve({
                                 address,
@@ -96,14 +93,12 @@ const MapHandler = (() => {
                                 placeId: results[0].place_id
                             });
                         } else {
-                            reject(`Konnte Adresse nicht finden: ${address}`);
+                            reject(`Could not find address: ${address}`);
                         }
                     });
                 });
             };
-            
             try {
-                // Geokodiere Start, Ziel und Zwischenstopps parallel
                 const startLocation = await geocodeAddress(addresses.start);
                 const endLocation = await geocodeAddress(addresses.end);
                 const waypointLocations = await Promise.all(addresses.waypoints.map(geocodeAddress));
