@@ -1,152 +1,82 @@
-// api-service.js - Kommunikation mit dem Backend (falls implementiert)
+// api-service.js - Communication with the backend (if implemented)
 
 const APIService = (() => {
-    // Basis-URL für API-Anfragen
-    const API_URL = '/api'; // Anpassen je nach Backend-Setup
-    
-    // Private Methoden
-    const handleResponse = async (response) => {
+    const API_URL = '/api';
+    const handleResponse = async response => {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `API-Fehler: ${response.status}`);
+            throw new Error(errorData.message || `API error: ${response.status}`);
         }
         return response.json();
     };
-    
-    // Öffentliche Methoden
     return {
-        // Methode zum Optimieren einer Route über das Backend
-        optimizeRouteApi: async function(locations, preference) {
+        optimizeRouteApi: async (locations, preference) => {
             try {
                 const response = await fetch(`${API_URL}/optimize-route`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        locations,
-                        preference
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ locations, preference })
                 });
-                
                 return handleResponse(response);
             } catch (error) {
-                // Wenn kein Backend verfügbar ist oder es einen Fehler gibt, 
-                // stattdessen die Client-seitige Optimierung verwenden
-                console.warn('Backend-Optimierung fehlgeschlagen, verwende Client-seitige Optimierung', error);
+                console.warn('Backend optimization failed, using client-side optimization', error);
                 return RouteOptimizer.optimizeRoute(locations, preference);
             }
         },
-        
-        // Methode zum Speichern einer Route im Backend
-        saveRoute: async function(routeData, name) {
+        saveRoute: async (routeData, name) => {
             try {
                 const response = await fetch(`${API_URL}/routes`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name,
-                        data: routeData
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, data: routeData })
                 });
-                
                 return handleResponse(response);
             } catch (error) {
-                // Falls kein Backend verfügbar, lokale Speicherung verwenden
-                console.warn('Backend-Speicherung fehlgeschlagen, verwende lokale Speicherung', error);
-                
-                // Hole gespeicherte Routen oder initialisiere leeres Array
+                console.warn('Backend save failed, using local storage', error);
                 const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
-                
-                // Füge neue Route hinzu
-                const newRoute = {
-                    id: Date.now().toString(),
-                    name,
-                    date: new Date().toISOString(),
-                    data: routeData
-                };
-                
+                const newRoute = { id: Date.now().toString(), name, date: new Date().toISOString(), data: routeData };
                 savedRoutes.push(newRoute);
-                
-                // Speichere zurück ins localStorage
                 localStorage.setItem('savedRoutes', JSON.stringify(savedRoutes));
-                
                 return newRoute;
             }
         },
-        
-        // Methode zum Abrufen gespeicherter Routen
-        getSavedRoutes: async function() {
+        getSavedRoutes: async () => {
             try {
                 const response = await fetch(`${API_URL}/routes`);
                 return handleResponse(response);
             } catch (error) {
-                // Falls kein Backend verfügbar, lokale Speicherung verwenden
-                console.warn('Backend-Abruf fehlgeschlagen, verwende lokale Speicherung', error);
-                
-                // Hole gespeicherte Routen aus localStorage
-                const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
-                return savedRoutes;
+                console.warn('Backend fetch failed, using local storage', error);
+                return JSON.parse(localStorage.getItem('savedRoutes') || '[]');
             }
         },
-        
-        // Methode zum Löschen einer gespeicherten Route
-        deleteRoute: async function(routeId) {
+        deleteRoute: async routeId => {
             try {
-                const response = await fetch(`${API_URL}/routes/${routeId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.status === 204) {
-                    return true; // Erfolgreich gelöscht
-                }
-                
+                const response = await fetch(`${API_URL}/routes/${routeId}`, { method: 'DELETE' });
+                if (response.status === 204) return true;
                 return handleResponse(response);
             } catch (error) {
-                // Falls kein Backend verfügbar, lokale Speicherung verwenden
-                console.warn('Backend-Löschung fehlgeschlagen, verwende lokale Speicherung', error);
-                
-                // Hole gespeicherte Routen aus localStorage
+                console.warn('Backend delete failed, using local storage', error);
                 const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
-                
-                // Filter die zu löschende Route
                 const updatedRoutes = savedRoutes.filter(route => route.id !== routeId);
-                
-                // Speichere zurück ins localStorage
                 localStorage.setItem('savedRoutes', JSON.stringify(updatedRoutes));
-                
                 return true;
             }
         },
-        
-        // Google Geocoding API: Adresse formatieren
-        geocodeAddress: async function(address) {
+        geocodeAddress: async address => {
             await Config.load();
             const apiKey = Config.get('GOOGLE_MAPS_API_KEY');
-            if (!apiKey) throw new Error('Google Maps API Key fehlt!');
+            if (!apiKey) throw new Error('Google Maps API key missing!');
             const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
             const response = await fetch(url);
             const data = await response.json();
-            if (data.status === 'OK' && data.results && data.results.length > 0) {
-                return data.results[0].formatted_address;
-            } else {
-                throw new Error('Adresse konnte nicht formatiert werden');
-            }
+            if (data.status === 'OK' && data.results?.length > 0) return data.results[0].formatted_address;
+            throw new Error('Address could not be formatted');
         },
-        
-        // Hilfsfunktion: Adressen aus Kontakten normalisieren
-        normalizeContactAddresses: async function(addresses) {
-            // addresses: Array von Strings
+        normalizeContactAddresses: async addresses => {
             const formatted = [];
             for (const addr of addresses) {
-                try {
-                    const formattedAddr = await APIService.geocodeAddress(addr);
-                    formatted.push(formattedAddr);
-                } catch (e) {
-                    formatted.push(addr); // Fallback: Originaladresse
-                }
+                try { formatted.push(await APIService.geocodeAddress(addr)); }
+                catch { formatted.push(addr); }
             }
             return formatted;
         },

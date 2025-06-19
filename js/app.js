@@ -1,139 +1,128 @@
-// app.js - Haupteinstiegspunkt der Anwendung
+// app.js - Main entry point of the application
 
-// Globale Variable für die Google Maps API
+// Global variable for the Google Maps API
 let googleMapsLoaded = false;
 
-// Initialisiere die Anwendung
+// Initialize the application
 const initializeApp = async () => {
     try {
-        // Lade Konfiguration
+        // Load configuration
         await Config.load();
         
         const apiKey = Config.get('GOOGLE_MAPS_API_KEY');
         if (!apiKey) {
-            throw new Error('Google Maps API Key nicht gefunden. Bitte .env Datei konfigurieren.');
+            throw new Error('Google Maps API key not found. Please configure the .env file.');
         }
         
-        // Lade Google Maps API dynamisch
+        // Load Google Maps API dynamically
         await loadGoogleMapsApi(apiKey);
         
-        // Initialisiere die Module
+        // Initialize modules
         UIController.init();
         MapHandler.init();
         
-        console.log('Anwendung erfolgreich initialisiert');
+        console.log('Application initialized successfully');
         
     } catch (error) {
-        console.error('Fehler bei der Initialisierung:', error);
-        alert('Fehler beim Laden der Anwendung: ' + error.message);
+        console.error('Initialization error:', error);
+        alert('Error loading the application: ' + error.message);
     }
 };
 
-// Lade Google Maps API dynamisch
-const loadGoogleMapsApi = (apiKey) => {
-    return new Promise((resolve, reject) => {
-        if (googleMapsLoaded) {
-            resolve();
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-        script.async = true;
-        script.defer = true;
-        script.onload = () => {
-            googleMapsLoaded = true;
-            resolve();
-        };
-        script.onerror = () => {
-            reject(new Error('Fehler beim Laden der Google Maps API'));
-        };
-        document.head.appendChild(script);
-    });
-};
+// Load Google Maps API dynamically
+const loadGoogleMapsApi = apiKey => new Promise((resolve, reject) => {
+    if (googleMapsLoaded) {
+        resolve();
+        return;
+    }
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => { googleMapsLoaded = true; resolve(); };
+    script.onerror = () => reject(new Error('Error loading Google Maps API'));
+    document.head.appendChild(script);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialisiere die Anwendung
+    // Initialize the application
     initializeApp();
 
-    // Buttons initial deaktivieren
+    // Initially disable buttons
     UIController.setResultsButtonsState(false);
     UIController.setLoadRouteButtonState(localStorage.getItem('savedRoutes') && JSON.parse(localStorage.getItem('savedRoutes')).length > 0);
 
-    // Event-Listener für den "Route optimieren"-Button
+    // Event listener for the "Optimize Route" button
     document.getElementById('calculate-route').addEventListener('click', async () => {
         try {
-            // UI aktualisieren
+            // Update UI to loading state
             UIController.setLoadingState(true);
             
-            // Adressen sammeln
+            // Collect addresses
             const addresses = UIController.collectAddresses();
             
-            // Validierung
+            // Validation
             if (!addresses.start || !addresses.end) {
-                throw new Error('Start- und Zielpunkt müssen angegeben werden.');
+                throw new Error('Start and destination must be specified.');
             }
             
-            // Geokodierung aller Adressen
+            // Geocode all addresses
             const locations = await MapHandler.geocodeAddresses(addresses);
             
-            // Optimierungspräferenz holen
+            // Get optimization preference
             const optimizationPreference = document.getElementById('optimization-preference').value;
             
-            // Fortbewegungsmittel holen
+            // Get mode of transport
             const travelMode = document.querySelector('input[name="travel-mode"]:checked').value;
             
-            // Route optimieren
-            // Je nach Anzahl der Wegpunkte entscheiden, welche Methode zu verwenden ist
+            // Optimize route
+            // Depending on the number of waypoints, decide which method to use
             let optimizedRoute;
             
             if (locations.waypoints.length <= 10) {
-                // Bei wenigen Wegpunkten verwende die Google Directions API direkt
+                // For few waypoints, use the Google Directions API directly
                 try {
                     optimizedRoute = await RouteOptimizer.optimizeRouteWithDirectionsApi(locations, travelMode);
                 } catch (error) {
-                    console.warn('Fehler bei der Directions API Optimierung:', error);
-                    // Fallback auf unseren eigenen Algorithmus
+                    console.warn('Directions API optimization error:', error);
+                    // Fallback to our own algorithm
                     optimizedRoute = await RouteOptimizer.optimizeRoute(locations, optimizationPreference, travelMode);
                 }
             } else {
-                // Bei vielen Wegpunkten eigenen Algorithmus verwenden
+                // For many waypoints, use our own algorithm
                 optimizedRoute = await RouteOptimizer.optimizeRoute(locations, optimizationPreference, travelMode);
             }
             
-            // Ergebnisse anzeigen
+            // Display results
             UIController.displayResults(optimizedRoute);
             MapHandler.displayRoute(optimizedRoute, travelMode);
             
         } catch (error) {
             UIController.showError(error.message);
-            console.error('Fehler bei der Routenberechnung:', error);
+            console.error('Route calculation error:', error);
         } finally {
             UIController.setLoadingState(false);
         }
     });
     
-    // Demo-Feature: Lade gespeicherte Routen beim Start
-    const loadSavedRoutes = async () => {
+    // Demo feature: Load saved routes on start
+    (async () => {
         try {
             const savedRoutes = await APIService.getSavedRoutes();
             
-            if (savedRoutes && savedRoutes.length > 0) {
-                console.log(`${savedRoutes.length} gespeicherte Routen gefunden:`, savedRoutes);
+            if (savedRoutes?.length > 0) {
+                console.log(`${savedRoutes.length} saved routes found:`, savedRoutes);
                 
-                // Hier könnte man eine UI für gespeicherte Routen implementieren
-                // Zum Beispiel eine Dropdown-Liste oder einen Button zum Anzeigen
+                // Here you could implement a UI for saved routes
+                // For example, a dropdown list or a button to display
             }
         } catch (error) {
-            console.warn('Fehler beim Laden gespeicherter Routen:', error);
+            console.warn('Error loading saved routes:', error);
         }
-    };
-      // Gespeicherte Routen laden
-    loadSavedRoutes();
+    })();
     
-    // Event Delegation für dynamisch hinzugefügte Elemente
-    document.addEventListener('click', (event) => {
-        // Beispiel für Event Delegation bei dynamisch erstellten Elementen
-        // Hier könnten Aktionen für dynamisch erstellte UI-Elemente implementiert werden
+    // Event delegation for dynamically added elements
+    document.addEventListener('click', event => {
+        // Placeholder for event delegation for dynamic elements
     });
 });
