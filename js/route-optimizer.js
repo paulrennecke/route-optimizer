@@ -29,9 +29,20 @@ const RouteOptimizer = (() => {
             let best = -1, bestValue = Infinity;
             for (let i = 1; i < n - 1; i++) {
                 if (!visited[i]) {
+                    const row = distanceMatrix.rows[current];
+                    if (!row || !row.elements || !row.elements[i]) {
+                        throw new Error('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
+                    }
+                    const element = row.elements[i];
+                    if (element.status && element.status !== 'OK') {
+                        throw new Error('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
+                    }
+                    if (!element.distance || !element.duration || typeof element.distance.value !== 'number' || typeof element.duration.value !== 'number') {
+                        throw new Error('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
+                    }
                     const value = preference === 'distance'
-                        ? distanceMatrix.rows[current].elements[i].distance.value
-                        : distanceMatrix.rows[current].elements[i].duration.value;
+                        ? element.distance.value
+                        : element.duration.value;
                     if (value < bestValue) {
                         bestValue = value;
                         best = i;
@@ -68,8 +79,19 @@ const RouteOptimizer = (() => {
                 let totalDistance = 0, totalDuration = 0;
                 for (let i = 0; i < optimizedIndices.length - 1; i++) {
                     const from = optimizedIndices[i], to = optimizedIndices[i + 1];
-                    totalDistance += distanceMatrix.rows[from].elements[to].distance.value;
-                    totalDuration += distanceMatrix.rows[from].elements[to].duration.value;
+                    const fromRow = distanceMatrix.rows[from];
+                    if (!fromRow || !fromRow.elements || !fromRow.elements[to]) {
+                        throw new Error('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
+                    }
+                    const element = fromRow.elements[to];
+                    if (element.status && element.status !== 'OK') {
+                        throw new Error('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
+                    }
+                    if (!element.distance || !element.duration || typeof element.distance.value !== 'number' || typeof element.duration.value !== 'number') {
+                        throw new Error('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
+                    }
+                    totalDistance += element.distance.value;
+                    totalDuration += element.duration.value;
                 }
                 return {
                     stops: optimizedStops,

@@ -631,8 +631,12 @@ window.optimizeRouteFromUI = async function() {
             throw new Error('Start and destination must be specified.');
         }
         const locations = await MapHandler.geocodeAddresses(addresses);
-        const optimizationPreference = document.getElementById('optimization-preference').value;
-        const travelMode = document.querySelector('input[name="travel-mode"]:checked').value;
+        const optRadio = document.querySelector('input[name="optimization-preference"]:checked');
+        if (!optRadio) throw new Error('No optimization preference selected or found!');
+        const optimizationPreference = optRadio.value;
+        const travelRadio = document.querySelector('input[name="travel-mode"]:checked');
+        if (!travelRadio) throw new Error('No travel mode selected or found!');
+        const travelMode = travelRadio.value;
         let optimizedRoute;
         if (locations.waypoints.length <= 10) {
             try {

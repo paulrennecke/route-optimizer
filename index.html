@@ -39,10 +39,22 @@
             <div class="options-container">
                 <div class="option">
                     <label for="optimization-preference">Optimize for:</label>
-                    <select id="optimization-preference">
-                        <option value="time" selected>&#9201; Shortest Time</option>
-                        <option value="distance">&#128207; Shortest Distance</option>
-                    </select>
+                    <div class="optimization-preference-container">
+                        <div class="optimization-preference-option">
+                            <input type="radio" id="opt-time" name="optimization-preference" value="time" checked>
+                            <label for="opt-time" class="optimization-preference-label">
+                                <span class="optimization-preference-icon">⏱️</span>
+                                <span class="optimization-preference-text">Shortest Time</span>
+                            </label>
+                        </div>
+                        <div class="optimization-preference-option">
+                            <input type="radio" id="opt-distance" name="optimization-preference" value="distance">
+                            <label for="opt-distance" class="optimization-preference-label">
+                                <span class="optimization-preference-icon">📏</span>
+                                <span class="optimization-preference-text">Shortest Distance</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="option">
                     <label for="travel-mode">Transportation Mode:</label>
@@ -71,9 +83,39 @@
                     </div>
                 </div>
             </div>
-            <button id="calculate-route" class="btn primary">Optimize Route</button>
+            <button id="calculate-route" class="btn primary">
+                <span style="vertical-align:middle; display:inline-block; width:2em; height:2em; margin-right:0.5em;">
+                    <!-- Route Calculation: S-shaped pins, 4 pins, snake-like connection -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 40 40" fill="none">
+                        <!-- S-shaped connection (runs through pin spikes) -->
+                        <path d="M8 34 Q20 34, 32 28 Q20 22, 8 12 Q20 6, 32 6" stroke="#3498db" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                        <!-- Pin 1 (bottom left, fully visible) -->
+                        <g>
+                            <path d="M4 31c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#3498db"/>
+                            <circle cx="9.6" cy="31" r="3.2" fill="#fff"/>
+                        </g>
+                        <!-- Pin 2 (bottom right, fully visible) -->
+                        <g>
+                            <path d="M22.8 25c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#f1c40f"/>
+                            <circle cx="28.4" cy="25" r="3.2" fill="#fff"/>
+                        </g>
+                        <!-- Pin 3 (top left, fully visible) -->
+                        <g>
+                            <path d="M4 9c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#e67e22"/>
+                            <circle cx="9.6" cy="9" r="3.2" fill="#fff"/>
+                        </g>
+                        <!-- Pin 4 (top right, fully visible) -->
+                        <g>
+                            <path d="M22.8 3c0-3 2.6-5.6 5.6-5.6s5.6 2.6 5.6 5.6-5.6 11.2-5.6 11.2-5.6-8.2-5.6-11.2z" fill="#e74c3c"/>
+                            <circle cx="28.4" cy="3" r="3.2" fill="#fff"/>
+                        </g>
+                    </svg>
+                    </svg>
+                </span>
+                Optimize Route
+            </button>
         </section>
-        <section id="results" class="hidden">
+        <section id="results">
             <div class="optimized-route">
                 <h2>Optimized Route</h2>
                 <div class="route-summary">

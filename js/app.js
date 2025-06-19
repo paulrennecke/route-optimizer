@@ -11,7 +11,6 @@ const initializeApp = async () => {
         await loadGoogleMapsApi(apiKey);
         UIController.init();
         MapHandler.init();
-        console.log('Application initialized successfully');
     } catch (error) {
         console.error('Initialization error:', error);
         alert('Error loading the application: ' + error.message);
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Start and destination must be specified.');
             }
             const locations = await MapHandler.geocodeAddresses(addresses);
-            const optimizationPreference = document.getElementById('optimization-preference').value;
+            const optimizationPreference = document.querySelector('input[name="optimization-preference"]:checked').value;
             const travelMode = document.querySelector('input[name="travel-mode"]:checked').value;
             let optimizedRoute;
             if (locations.waypoints.length <= 10) {
@@ -58,7 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
             UIController.displayResults(optimizedRoute);
             MapHandler.displayRoute(optimizedRoute, travelMode);
         } catch (error) {
-            UIController.showError(error.message);
+            if (typeof error.message === 'string' && error.message.includes('keine Verbindung') || error.message.includes('NO_ROUTE') || error.message.includes('ZERO_RESULTS')) {
+                UIController.showError('Route calculation not possible: No connection between at least two points (e.g. no road between islands).');
+            } else {
+                UIController.showError(error.message);
+            }
             console.error('Route calculation error:', error);
         } finally {
             UIController.setLoadingState(false);
