@@ -1,4 +1,4 @@
-# Waypoint Optimizer
+# Route Optimizer
 
 A web application that can optimize the order of waypoints in Google Maps routes using data from your Google Contacts.
 

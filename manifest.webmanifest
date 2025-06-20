@@ -1,0 +1,24 @@
+{
+  "name": "Route Optimizer",
+  "short_name": "RouteOpt",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2c3e50",
+  "description": "A web application that can optimize the order of waypoints in Google Maps routes using data from your Google Contacts.",
+  "icons": [
+     {
+      "src": "/icons/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+
+  ]
+}
