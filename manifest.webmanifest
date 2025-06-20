@@ -1,6 +1,6 @@
 {
   "name": "Route Optimizer",
-  "short_name": "RouteOpt",
+  "short_name": "Route Optimizer",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
