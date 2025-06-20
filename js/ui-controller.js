@@ -290,13 +290,29 @@ const UIController = (() => {
                 if (contactAddressNameMap.has(stop.address)) {
                     stopText = `${contactAddressNameMap.get(stop.address)} — ${stop.address}`;
                 }
-                if (index === 0) {
-                    stopText = `Start: ${stopText}`;
-                } else if (index === optimizedRoute.stops.length - 1) {
-                    stopText = `Destination: ${stopText}`;
-                }
                 li.textContent = stopText;
                 stopsListElement.appendChild(li);
+                // Show distance and duration to next stop (if not last)
+                if (index < optimizedRoute.stops.length - 1 && optimizedRoute.legs && optimizedRoute.legs[index]) {
+                    const leg = optimizedRoute.legs[index];
+                    const info = document.createElement('div');
+                    info.className = 'route-leg-info';
+                    let duration = '';
+                    if (leg.duration && typeof leg.duration.value === 'number') {
+                        let seconds = leg.duration.value;
+                        const days = Math.floor(seconds / 86400);
+                        const hours = Math.floor((seconds % 86400) / 3600);
+                        const minutes = Math.floor((seconds % 3600) / 60);
+                        if (days > 0) duration += days + 'd ';
+                        if (hours > 0) duration += hours + 'h ';
+                        if (minutes > 0 || (!days && !hours)) duration += minutes + 'min';
+                        duration = duration.trim();
+                    } else if (leg.duration && typeof leg.duration.text === 'string') {
+                        duration = leg.duration.text;
+                    }
+                    info.textContent = `${leg.distance.text}, ${duration}`;
+                    stopsListElement.appendChild(info);
+                }
             });
 
             // Scroll to results section

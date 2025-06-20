@@ -59,9 +59,14 @@ const RouteOptimizer = (() => {
     };
 
     const formatDuration = seconds => {
-        const hours = Math.floor(seconds / 3600);
+        const days = Math.floor(seconds / 86400);
+        const hours = Math.floor((seconds % 86400) / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
-        return hours > 0 ? `${hours} hr ${minutes} min` : `${minutes} min`;
+        let result = '';
+        if (days > 0) result += days + 'd ';
+        if (hours > 0) result += hours + 'h ';
+        if (minutes > 0 || (!days && !hours)) result += minutes + 'min';
+        return result.trim();
     };
     const formatTravelMode = travelMode => ({
         'DRIVING': 'by car',
@@ -77,6 +82,7 @@ const RouteOptimizer = (() => {
                 const optimizedIndices = nearestNeighborAlgorithm(distanceMatrix, preference);
                 const optimizedStops = optimizedIndices.map(index => allLocations[index]);
                 let totalDistance = 0, totalDuration = 0;
+                const legs = [];
                 for (let i = 0; i < optimizedIndices.length - 1; i++) {
                     const from = optimizedIndices[i], to = optimizedIndices[i + 1];
                     const fromRow = distanceMatrix.rows[from];
@@ -92,12 +98,17 @@ const RouteOptimizer = (() => {
                     }
                     totalDistance += element.distance.value;
                     totalDuration += element.duration.value;
+                    legs.push({
+                        distance: element.distance,
+                        duration: element.duration
+                    });
                 }
                 return {
                     stops: optimizedStops,
                     totalDistance: `${(totalDistance / 1000).toFixed(1)} km`,
                     totalDuration: formatDuration(totalDuration),
                     travelMode: formatTravelMode(travelMode),
+                    legs
                 };
             } catch (error) {
                 throw error;
@@ -121,15 +132,21 @@ const RouteOptimizer = (() => {
                         optimizedStops.push(locationData.end);
                         const route = response.routes[0];
                         let totalDistance = 0, totalDuration = 0;
+                        const legs = [];
                         route.legs.forEach(leg => {
                             totalDistance += leg.distance.value;
                             totalDuration += leg.duration.value;
+                            legs.push({
+                                distance: leg.distance,
+                                duration: leg.duration
+                            });
                         });
                         resolve({
                             stops: optimizedStops,
                             totalDistance: `${(totalDistance / 1000).toFixed(1)} km`,
                             totalDuration: formatDuration(totalDuration),
                             travelMode: formatTravelMode(travelMode),
+                            legs
                         });
                     } else {
                         reject(`Route optimization error: ${status}`);
