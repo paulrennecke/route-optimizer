@@ -359,7 +359,7 @@ h2 {
 .route-list ol {
     list-style-position: inside;
     padding-left: 0;
-    counter-reset: route-counter;
+    counter-reset: route-counter -1;
 }
 
 .route-list li {
@@ -399,7 +399,7 @@ h2 {
 }
 
 .route-list li:first-child + li:before {
-    counter-reset: route-counter 0;
+    counter-reset: route-counter -1;
 }
 
 .route-list li:last-child:before {
