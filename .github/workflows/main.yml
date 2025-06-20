@@ -48,12 +48,16 @@ jobs:
           git config git-ftp.insecure 1
           git ftp push --auto-init --remote-root "$REMOTE_ROOT" --verbose
 
-      - name: Copy example env and set Google Maps API key
+      - name: Copy example env and set Google Maps API key and Client ID
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           HOST: ${{ secrets.SFTP_HOST }}
           REMOTE_ROOT: ${{ secrets.SFTP_REMOTE_ROOT }}
           USERNAME: ${{ secrets.SFTP_USERNAME }}
         run: |
-            ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USERNAME@$HOST "cp '$REMOTE_ROOT/.env.example' '$REMOTE_ROOT/.env' && sed -i 's/^GOOGLE_MAPS_API_KEY=.*/GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY/' '$REMOTE_ROOT/.env'"
-            echo ".env file created from .env.example with updated Google Maps API key in $REMOTE_ROOT"
+            ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USERNAME@$HOST \
+              "cp '$REMOTE_ROOT/.env.example' '$REMOTE_ROOT/.env' && \
+              sed -i 's/^GOOGLE_MAPS_API_KEY=.*/GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY/' '$REMOTE_ROOT/.env' && \
+              sed -i 's/^GOOGLE_CLIENT_ID=.*/GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID/' '$REMOTE_ROOT/.env'"
+            echo ".env file created from .env.example with updated Google Maps API key and Client ID in $REMOTE_ROOT"
