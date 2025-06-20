@@ -240,7 +240,7 @@ const UIController = (() => {
                 setupCombinedAutocomplete(field);
             });
             // Event listeners for export, save, and load
-            document.getElementById('export-route').addEventListener('click', this.exportRoute);
+            document.getElementById('export-route').addEventListener('click', () => UIController.exportRoute());
             document.getElementById('save-route').addEventListener('click', () => UIController.saveRoute());
             document.getElementById('load-route').addEventListener('click', () => UIController.loadRoute());
             UIController.setResultsButtonsState(false);
@@ -397,8 +397,31 @@ const UIController = (() => {
                     }
                     document.getElementById('route-modal').style.display = 'none';
                     UIController.setResultsButtonsState(true);
-                    if (window.optimizeRouteFromUI) {
-                        window.optimizeRouteFromUI();
+                    // Automatically optimize route after loading
+                    try {
+                        UIController.setLoadingState(true);
+                        const addresses = UIController.collectAddresses();
+                        const locations = await MapHandler.geocodeAddresses(addresses);
+                        const optSelect = document.getElementById('optimization-preference');
+                        const optimizationPreference = optSelect ? optSelect.value : 'time';
+                        const travelSelect = document.getElementById('travel-mode');
+                        const travelMode = travelSelect ? travelSelect.value : 'DRIVING';
+                        let optimizedRoute;
+                        if (locations.waypoints.length <= 10) {
+                            try {
+                                optimizedRoute = await RouteOptimizer.optimizeRouteWithDirectionsApi(locations, travelMode);
+                            } catch (error) {
+                                optimizedRoute = await RouteOptimizer.optimizeRoute(locations, optimizationPreference, travelMode);
+                            }
+                        } else {
+                            optimizedRoute = await RouteOptimizer.optimizeRoute(locations, optimizationPreference, travelMode);
+                        }
+                        UIController.displayResults(optimizedRoute);
+                        MapHandler.displayRoute(optimizedRoute, travelMode);
+                    } catch (error) {
+                        UIController.showError('Failed to optimize loaded route: ' + error.message);
+                    } finally {
+                        UIController.setLoadingState(false);
                     }
                 };
             });
