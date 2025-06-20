@@ -269,8 +269,19 @@ const UIController = (() => {
         },
         setLoadingState: isLoading => {
             const btn = document.getElementById('calculate-route');
-            btn.disabled = isLoading;
-            btn.innerHTML = isLoading ? '<span class="loading-text">Calculating...</span>' : 'Optimize Route';
+            if (isLoading) {
+                if (!btn.dataset.originalContent) {
+                    btn.dataset.originalContent = btn.innerHTML;
+                }
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-text">Calculating...</span>';
+            } else {
+                btn.disabled = false;
+                if (btn.dataset.originalContent) {
+                    btn.innerHTML = btn.dataset.originalContent;
+                    delete btn.dataset.originalContent;
+                }
+            }
         },
         displayResults: optimizedRoute => {
             resultsSection.classList.remove('hidden');
