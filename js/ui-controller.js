@@ -423,6 +423,14 @@ const UIController = (() => {
                         input.value = addresses.waypoints[i];
                         setupCombinedAutocomplete(input);
                     }
+                    if (entry.optimizationPreference) {
+                        const optSelect = document.getElementById('optimization-preference');
+                        if (optSelect) optSelect.value = entry.optimizationPreference;
+                    }
+                    if (entry.travelMode) {
+                        const travelSelect = document.getElementById('travel-mode');
+                        if (travelSelect) travelSelect.value = entry.travelMode;
+                    }
                     document.getElementById('route-modal').style.display = 'none';
                     UIController.setResultsButtonsState(true);
                     // Automatically optimize route after loading
@@ -490,10 +498,16 @@ const UIController = (() => {
                         end: document.getElementById('end').value.trim(),
                         waypoints: Array.from(document.querySelectorAll('.waypoint')).map(wp => wp.value.trim()).filter(Boolean)
                     };
+                    const optSelect = document.getElementById('optimization-preference');
+                    const travelSelect = document.getElementById('travel-mode');
+                    const optimizationPreference = optSelect ? optSelect.value : 'time';
+                    const travelMode = travelSelect ? travelSelect.value : 'DRIVING';
                     savedRoutes.push({
                         name: routeName,
                         date: new Date().toISOString(),
-                        addresses
+                        addresses,
+                        optimizationPreference,
+                        travelMode
                     });
                     localStorage.setItem('savedRoutes', JSON.stringify(savedRoutes));
                     document.getElementById('route-modal').style.display = 'none';
@@ -617,7 +631,6 @@ const UIController = (() => {
                 const travel = document.getElementById('travel-mode');
                 if (travel) params.set('mode', travel.value);
                 const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-                // Direkt in die Zwischenablage kopieren und Button-Text ändern
                 const shareBtn = document.getElementById('share-route');
                 navigator.clipboard.writeText(url).then(() => {
                     if (shareBtn) {
@@ -634,7 +647,6 @@ const UIController = (() => {
                 UIController.showError('Fehler beim Teilen der Route: ' + e.message);
             }
         },
-        // Für Teilen-Funktion von außen zugänglich machen
         createWaypointElement,
         setupCombinedAutocomplete,
     };
