@@ -690,9 +690,9 @@ h2 {
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
-/* Modal Styles for better mobile support */
+/* Modal Styles */
 .modal {
-  display: none; /* default hidden */
+  display: none;
   position: fixed;
   z-index: 10000;
   left: 0;
@@ -703,7 +703,9 @@ h2 {
   align-items: center;
   justify-content: center;
 }
-
+.modal.show {
+  display: flex;
+}
 .modal-content {
   background: #fff;
   border-radius: 10px;
@@ -712,14 +714,16 @@ h2 {
   padding: 2em 1.5em 1.5em 1.5em;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   position: relative;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  min-width: 0;
+}
+.modal-close {
+  position: absolute;
+  top: 0.7em;
+  right: 1em;
+  background: none;
+  border: none;
+  font-size: 1.7em;
+  color: #888;
+  cursor: pointer;
 }
 
 .modal-form {
@@ -943,4 +947,30 @@ h2 {
     margin-bottom: 0.1em;
     margin-top: -0.2em;
     display: block;
+}
+
+.autocomplete-item-contact {
+  color: #2980b9;
+  font-weight: bold;
+}
+.contact-badge {
+  background: #eaf6ff;
+  color: #2980b9;
+  font-size: 0.85em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.modal-message {
+  padding: 1em 0;
+  color: #888;
+  text-align: center;
+}
+
+#import-google-contacts[disabled], #import-google-contacts.loaded {
+  background: #eaf6ff;
+  color: #2980b9;
+  border: 1px solid #2980b9;
+  cursor: default;
 }

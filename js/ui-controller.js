@@ -88,7 +88,7 @@ const UIController = (() => {
                 const item = createElement('div', { className: 'autocomplete-item' });
                 Object.assign(item.style, { padding: '0.5em 1em', cursor: 'pointer' });
                 item.innerHTML = s.type === 'contact'
-                    ? `<span style="color:#2980b9;font-weight:bold;">${s.label}</span> <span style="background:#eaf6ff;color:#2980b9;font-size:0.85em;padding:2px 6px;border-radius:6px;margin-left:8px;">Contact</span>`
+                    ? `<span class="autocomplete-item-contact">${s.label}</span> <span class="contact-badge">Contact</span>`
                     : s.label;
                 if (idx === 0) item.classList.add('selected');
                 item.addEventListener('mousedown', e => {
@@ -374,7 +374,7 @@ const UIController = (() => {
         loadRoute: function() {
             const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
             if (!savedRoutes.length) {
-                this.showRouteModal('<div style="padding:1em 0; color:#888;">No saved routes found.</div>');
+                this.showRouteModal('<div class="modal-message">No saved routes found.</div>');
                 return;
             }
             let html = `
@@ -392,8 +392,8 @@ const UIController = (() => {
                         <div class="modal-route-date">${dateString}</div>
                     </div>
                     <div class="modal-route-actions">
-                        <button class="btn modal-btn modal-btn-delete" title="Delete route" data-delidx="${i}"><span style="font-size:1.1em; vertical-align:middle;">🗑️</span></button>
-                        <button class="btn modal-btn modal-btn-load" data-idx="${i}"><span style="font-size:1.1em; vertical-align:middle;">📂</span></button>
+                        <button class="btn modal-btn modal-btn-delete" title="Delete route" data-delidx="${i}"><span>🗑️</span></button>
+                        <button class="btn modal-btn modal-btn-load" data-idx="${i}"><span>📂</span></button>
                     </div>
                 </div>
                 `;
@@ -473,7 +473,7 @@ const UIController = (() => {
                     <form id="route-save-form" class="modal-form">
                         <label for="route-name-input" class="modal-label">Route name:</label>
                         <input id="route-name-input" type="text" class="modal-input">
-                        <button id="route-name-save-btn" class="btn modal-btn"><span style="vertical-align:middle;">💾</span> Save</button>
+                        <button id="route-name-save-btn" class="btn modal-btn"><span>💾</span> Save</button>
                     </form>`;
                 this.showRouteModal(html);
                 document.getElementById('route-name-input').focus();
@@ -532,7 +532,7 @@ const UIController = (() => {
                             const btn = document.getElementById('import-google-contacts');
                             if (btn) {
                                 btn.disabled = true;
-                                btn.innerHTML = '<span style="color:#2980b9;font-size:1.2em;vertical-align:middle;margin-right:0.5em;">&#x2714;</span>Google Contacts loaded';
+                                btn.innerHTML = '<span>&#x2714;</span>Google Contacts loaded';
                                 btn.style.background = '#eaf6ff';
                                 btn.style.color = '#2980b9';
                                 btn.style.border = '1px solid #2980b9';
@@ -622,7 +622,7 @@ const UIController = (() => {
                 navigator.clipboard.writeText(url).then(() => {
                     if (shareBtn) {
                         const original = shareBtn.innerHTML;
-                        shareBtn.innerHTML = '<span style="vertical-align:middle;">✅</span> Link kopiert!';
+                        shareBtn.innerHTML = '<span>✅</span> Link copied!';
                         shareBtn.disabled = true;
                         setTimeout(() => {
                             shareBtn.innerHTML = original;
