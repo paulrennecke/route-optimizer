@@ -70,6 +70,39 @@ document.addEventListener('DOMContentLoaded', () => {
             UIController.setLoadingState(false);
         }
     });
+    const params = new URLSearchParams(window.location.search);
+    const start = params.get('start');
+    const end = params.get('end');
+    const waypoints = params.get('waypoints');
+    const opt = params.get('opt');
+    const mode = params.get('mode');
+    if (start && end) {
+        document.getElementById('start').value = start;
+        document.getElementById('end').value = end;
+        const waypointsContainer = document.getElementById('waypoints-container');
+        waypointsContainer.innerHTML = '';
+        if (waypoints) {
+            const wpArr = waypoints.split('|');
+            for (let i = 0; i < wpArr.length; i++) {
+                const wrapper = UIController.createWaypointElement(i + 1);
+                waypointsContainer.appendChild(wrapper);
+                const input = wrapper.querySelector('.address-autocomplete');
+                input.value = wpArr[i];
+                UIController.setupCombinedAutocomplete(input);
+            }
+        }
+        if (opt) {
+            const optSelect = document.getElementById('optimization-preference');
+            if (optSelect) optSelect.value = opt;
+        }
+        if (mode) {
+            const travelSelect = document.getElementById('travel-mode');
+            if (travelSelect) travelSelect.value = mode;
+        }
+        setTimeout(() => {
+            document.getElementById('calculate-route').click();
+        }, 500);
+    }
     (async () => {
         try {
             const savedRoutes = await APIService.getSavedRoutes();

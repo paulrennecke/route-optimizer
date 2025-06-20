@@ -576,12 +576,23 @@ h2 {
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 0.7rem;
+    margin-top: 1.2em;
     flex-wrap: wrap;
 }
-.route-buttons-row > .btn {
-    min-width: 100px;
-    font-size: 0.95rem;
+#gmaps-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5em;
+}
+#route-storage-ui > div:first-child {
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+}
+#share-route-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5em;
 }
 #route-storage-ui > div {
     display: flex;

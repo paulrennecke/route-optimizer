@@ -243,6 +243,7 @@ const UIController = (() => {
             document.getElementById('export-route').addEventListener('click', () => UIController.exportRoute());
             document.getElementById('save-route').addEventListener('click', () => UIController.saveRoute());
             document.getElementById('load-route').addEventListener('click', () => UIController.loadRoute());
+            document.getElementById('share-route').addEventListener('click', UIController.shareRoute);
             UIController.setResultsButtonsState(false);
             UIController.setLoadRouteButtonState(localStorage.getItem('savedRoutes') && JSON.parse(localStorage.getItem('savedRoutes')).length > 0);
             UIController.initGoogleContactsLogin();
@@ -578,9 +579,52 @@ const UIController = (() => {
         setResultsButtonsState: function(enabled) {
             document.getElementById('export-route').disabled = !enabled;
             document.getElementById('save-route').disabled = !enabled;
+            document.getElementById('share-route').disabled = !enabled;
         },
         setLoadRouteButtonState: function(enabled) {
             document.getElementById('load-route').disabled = !enabled;
-        }
+        },
+        shareRoute: function() {
+            try {
+                const addresses = {
+                    start: document.getElementById('start').value.trim(),
+                    end: document.getElementById('end').value.trim(),
+                    waypoints: Array.from(document.querySelectorAll('.waypoint')).map(wp => wp.value.trim()).filter(Boolean)
+                };
+                if (!addresses.start || !addresses.end) {
+                    UIController.showError('Start- und Zieladresse müssen ausgefüllt sein, um die Route zu teilen.');
+                    return;
+                }
+                const params = new URLSearchParams();
+                params.set('start', addresses.start);
+                params.set('end', addresses.end);
+                if (addresses.waypoints.length > 0) {
+                    params.set('waypoints', addresses.waypoints.join('|'));
+                }
+                const opt = document.getElementById('optimization-preference');
+                if (opt) params.set('opt', opt.value);
+                const travel = document.getElementById('travel-mode');
+                if (travel) params.set('mode', travel.value);
+                const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+                // Direkt in die Zwischenablage kopieren und Button-Text ändern
+                const shareBtn = document.getElementById('share-route');
+                navigator.clipboard.writeText(url).then(() => {
+                    if (shareBtn) {
+                        const original = shareBtn.innerHTML;
+                        shareBtn.innerHTML = '<span style="vertical-align:middle;">✅</span> Link kopiert!';
+                        shareBtn.disabled = true;
+                        setTimeout(() => {
+                            shareBtn.innerHTML = original;
+                            shareBtn.disabled = false;
+                        }, 2000);
+                    }
+                });
+            } catch (e) {
+                UIController.showError('Fehler beim Teilen der Route: ' + e.message);
+            }
+        },
+        // Für Teilen-Funktion von außen zugänglich machen
+        createWaypointElement,
+        setupCombinedAutocomplete,
     };
 })();
