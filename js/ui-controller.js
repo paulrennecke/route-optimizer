@@ -561,7 +561,14 @@ const UIController = (() => {
                     const name = person.names?.[0]?.displayName;
                     if (name && person.addresses) {
                         person.addresses.forEach(addr => {
-                            const address = addr.formattedValue || addr.streetAddress || null;
+                            let addressParts = [];
+                            if (addr.streetAddress) addressParts.push(addr.streetAddress.trim());
+                            if (addr.postalCode) addressParts.push(addr.postalCode.trim());
+                            if (addr.city) addressParts.push(addr.city.trim());
+                            if (addr.region) addressParts.push(addr.region.trim());
+                            if (addr.country) addressParts.push(addr.country.trim());
+                            let address = addressParts.join(' ');
+                            if (!address && addr.formattedValue) address = addr.formattedValue.trim();
                             if (address) UIController._contacts.push({ name, address });
                         });
                     }
