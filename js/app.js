@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     (async () => {
         try {
-            const savedRoutes = await APIService.getSavedRoutes();
+            const savedRoutes = JSON.parse(localStorage.getItem('savedRoutes') || '[]');
             if (savedRoutes?.length > 0) {
                 console.log(`${savedRoutes.length} saved routes found:`, savedRoutes);
             }

@@ -5,7 +5,6 @@ const MapHandler = (() => {
 
     const clearMarkers = () => { markers.forEach(m => m.setMap(null)); markers = []; };
     const clearInputMarkers = () => { inputMarkers.forEach(m => m.setMap(null)); inputMarkers = []; };
-    const createCustomMarker = (position, icon, title) => new google.maps.Marker({ position, map, title, icon, animation: google.maps.Animation.DROP });
 
     return {
         init: function() {
@@ -153,15 +152,6 @@ const MapHandler = (() => {
                 const infoContent = index === 0 ? 'Start' : (index === stops.length - 1 ? 'End' : `Stop ${index}`);
                 const infoWindow = new google.maps.InfoWindow({ content: `<div class="info-window"><strong>${infoContent}</strong><p>${stop.address}</p></div>` });
                 marker.addListener('click', () => infoWindow.open(map, marker));
-            });
-        },
-        centerMapOnAddress: function(address) {
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ address }, (results, status) => {
-                if (status === google.maps.GeocoderStatus.OK) {
-                    map.setCenter(results[0].geometry.location);
-                    map.setZoom(13);
-                }
             });
         }
     };

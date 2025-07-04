@@ -315,21 +315,6 @@ h2 {
     }
 }
 
-.waypoint-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.7rem;
-    background-color: #f9f9f9;
-    padding: 0.5rem;
-    border-radius: 5px;
-    border-left: 3px solid #3498db;
-}
-
-.waypoint-item .address-input {
-    flex: 1;
-    margin-bottom: 0;
-}
-
 .remove-waypoint {
     background: none;
     border: none;
@@ -450,107 +435,6 @@ h2 {
     }
     100% {
         transform: rotate(360deg);
-    }
-}
-
-.travel-mode-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-.travel-mode-option {
-    flex: 1;
-    min-width: 80px;
-}
-
-.travel-mode-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.travel-mode-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem 0.5rem;
-    background-color: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-}
-
-.travel-mode-option input[type="radio"]:checked + .travel-mode-label {
-    background-color: #e3f2fd;
-    border-color: #3498db;
-    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
-}
-
-.travel-mode-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-}
-
-.travel-mode-text {
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.optimization-preference-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-.optimization-preference-option {
-    flex: 1;
-    min-width: 120px;
-}
-.optimization-preference-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.optimization-preference-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem 0.5rem;
-    background-color: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-}
-.optimization-preference-option input[type="radio"]:checked + .optimization-preference-label {
-    background-color: #e3f2fd;
-    border-color: #3498db;
-    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
-}
-.optimization-preference-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-}
-.optimization-preference-text {
-    font-weight: bold;
-    font-size: 0.95rem;
-}
-@media (max-width: 480px) {
-    .optimization-preference-container {
-        flex-direction: column;
-    }
-}
-
-@media (max-width: 480px) {
-    .travel-mode-container {
-        flex-direction: column;
     }
 }
 

@@ -15,21 +15,6 @@ const UIController = (() => {
         return el;
     };
 
-    const renderWaypoints = () => {
-        waypointsContainer.innerHTML = '';
-        const allWaypoints = Array.from(document.querySelectorAll('.waypoint'));
-        allWaypoints.forEach((input, idx) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'waypoint-inline';
-            const number = document.createElement('span');
-            number.className = 'waypoint-number';
-            number.textContent = (idx + 1) + '.';
-            wrapper.appendChild(number);
-            wrapper.appendChild(input);
-            waypointsContainer.appendChild(wrapper);
-        });
-    };
-
     const createWaypointElement = id => {
         const wrapper = createElement('div', { className: 'waypoint-inline address-input' });
         const number = createElement('span', { className: 'waypoint-number', text: id + '.' });
@@ -58,11 +43,6 @@ const UIController = (() => {
             const num = w.querySelector('.waypoint-number');
             if (num) num.textContent = (idx + 1) + '.';
         });
-    };
-
-    const removeWaypoint = id => {
-        const el = document.getElementById(`waypoint-${id}`)?.closest('.waypoint-item');
-        if (el) el.remove();
     };
 
     // Autocomplete for address fields (Google + contacts)
